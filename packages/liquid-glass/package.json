@@ -1,0 +1,77 @@
+{
+  "name": "@xjl-resources/dsh-plugin-liquid-glass",
+  "version": "1.0.0",
+  "description": "Liquid Glass as a UI project package for dsh-ui-projects: an iOS-style translucent material, with its own first-paint sheet and its own maintenance wrapper.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    },
+    "compatibility": {
+      "dsh": ">=0.1.5-rc.1"
+    },
+    "uiProject": {
+      "schemaVersion": 1,
+      "pluginApiVersion": 1,
+      "id": "liquid-glass",
+      "name": "Liquid Glass",
+      "description": "Translucent frosted layers with the system accent and generous rounding. Real blur over the system background, in light and dark.",
+      "type": "skin",
+      "scope": "global",
+      "defaultEnabled": false,
+      "supports": ["light", "dark", "mobile"],
+      "perfLevel": "high",
+      "testItems": [
+        {
+          "id": "text-readable",
+          "label": "Text over the glass is comfortable to read, in light and dark"
+        },
+        {
+          "id": "settings-centred",
+          "label": "Settings opens centred over the whole window, not inside a column"
+        },
+        {
+          "id": "no-first-frame-flash",
+          "label": "Reopening dsh shows the skin on the first frame, with no flash"
+        }
+      ],
+      "preview": "radial-gradient(120% 100% at 10% 0%, rgb(0 122 255 / 45%) 0%, transparent 60%),radial-gradient(100% 100% at 90% 20%, rgb(10 132 255 / 40%) 0%, transparent 60%),linear-gradient(160deg, #f7f9ff 0%, #e6ecff 100%)",
+      "previewLabel": "Liquid Glass frosted layers over a blue gradient"
+    }
+  },
+  "peerDependencies": {
+    "dsh-ui-projects": "^0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-ui-projects": {
+      "optional": true
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "install.ps1",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "manifest": "node ../../.dev/dsh-ui-projects/scripts/derive-manifest.mjs --package . --check",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/verify.mjs"
+  },
+  "license": "UNLICENSED"
+}

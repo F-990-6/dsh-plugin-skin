@@ -1,0 +1,25 @@
+{
+  "name": "@xjl-resources/dsh-plugin-skin",
+  "version": "1.0.0",
+  "files": [
+    "README.md",
+    "package.json"
+  ],
+  "description": "Aggregate package for dsh UI skins. Installs every skin in packages/ through its dependencies, and registers none of them itself.",
+  "type": "module",
+  "dsh": {
+    "compatibility": {
+      "dsh": ">=0.1.5-rc.1"
+    }
+  },
+  "peerDependencies": {
+    "dsh-ui-projects": "^0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-ui-projects": { "optional": true }
+  },
+  "dependencies": {
+    "@xjl-resources/dsh-plugin-liquid-glass": "^1.0.0"
+  },
+  "license": "UNLICENSED"
+}

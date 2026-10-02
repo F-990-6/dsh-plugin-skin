@@ -1,0 +1,175 @@
+# one-shot-fix-p2-problem5 report
+# mode: dry-run
+# one-shot: problem 5, plan C2 (junction → .dev/, five specifiers repointed)
+# mode:   dry-run
+# report: E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\one-shot-fix-p2-problem5.report.txt
+# skin:   E:\dsh-plugins\dsh-plugin-skin
+# target: E:\dsh\plugins\dsh-ui-projects
+
+目标文件 7 个；落在 meta/ · lib/ · src/ 内的：0 个
+
+====================================================================================================
+=== V0 · 路径级数机械验证 ===
+====================================================================================================
+C-1 packages\liquid-glass\scripts\build.mjs
+  命中 "'../../dsh-ui-projects/"：1 处（预期 1）
+  旧 import："../../dsh-ui-projects/scripts/bundle-client.mjs"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects\scripts\bundle-client.mjs
+  新 import："../../../.dev/dsh-ui-projects//scripts/bundle-client.mjs"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects\scripts\bundle-client.mjs
+  断言 · 尾段相同（"/scripts/bundle-client.mjs" = "//scripts/bundle-client.mjs"）⇒ FAIL
+  断言 · 新路径位于 .dev\dsh-ui-projects 之下 ⇒ OK
+  物理解析（realpathSync，会跟随 junction）⇒ E:\dsh\plugins\dsh-ui-projects\scripts\bundle-client.mjs ⇒ OK（落在 ${JUNCTION_TARGET} 之下）
+  说明：path.resolve 是纯字符串运算、不跟随 junction；因此"同一物理目录"由上面的 realpathSync 判定。
+
+C-2 packages\liquid-glass\scripts\derive-boot-css.mjs
+  命中 "'../../dsh-ui-projects/"：1 处（预期 1）
+  旧 import："../../dsh-ui-projects/src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects\src\client\scope-css.js
+  新 import："../../../.dev/dsh-ui-projects//src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects\src\client\scope-css.js
+  断言 · 尾段相同（"/src/client/scope-css.js" = "//src/client/scope-css.js"）⇒ FAIL
+  断言 · 新路径位于 .dev\dsh-ui-projects 之下 ⇒ OK
+  物理解析（realpathSync，会跟随 junction）⇒ E:\dsh\plugins\dsh-ui-projects\src\client\scope-css.js ⇒ OK（落在 ${JUNCTION_TARGET} 之下）
+  说明：path.resolve 是纯字符串运算、不跟随 junction；因此"同一物理目录"由上面的 realpathSync 判定。
+
+C-3 packages\liquid-glass\scripts\emitted-css.mjs
+  命中 "'../../dsh-ui-projects/"：1 处（预期 1）
+  旧 import："../../dsh-ui-projects/src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects\src\client\scope-css.js
+  新 import："../../../.dev/dsh-ui-projects//src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects\src\client\scope-css.js
+  断言 · 尾段相同（"/src/client/scope-css.js" = "//src/client/scope-css.js"）⇒ FAIL
+  断言 · 新路径位于 .dev\dsh-ui-projects 之下 ⇒ OK
+  物理解析（realpathSync，会跟随 junction）⇒ E:\dsh\plugins\dsh-ui-projects\src\client\scope-css.js ⇒ OK（落在 ${JUNCTION_TARGET} 之下）
+  说明：path.resolve 是纯字符串运算、不跟随 junction；因此"同一物理目录"由上面的 realpathSync 判定。
+
+C-4 packages\liquid-glass\scripts\verify.mjs
+  命中 "'../../dsh-ui-projects/"：1 处（预期 1）
+  旧 import："../../dsh-ui-projects/src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects\src\client\scope-css.js
+  新 import："../../../.dev/dsh-ui-projects//src/client/scope-css.js"
+    path.resolve ⇒ E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects\src\client\scope-css.js
+  断言 · 尾段相同（"/src/client/scope-css.js" = "//src/client/scope-css.js"）⇒ FAIL
+  断言 · 新路径位于 .dev\dsh-ui-projects 之下 ⇒ OK
+  物理解析（realpathSync，会跟随 junction）⇒ E:\dsh\plugins\dsh-ui-projects\src\client\scope-css.js ⇒ OK（落在 ${JUNCTION_TARGET} 之下）
+  说明：path.resolve 是纯字符串运算、不跟随 junction；因此"同一物理目录"由上面的 realpathSync 判定。
+
+C-5 packages/liquid-glass/package.json
+  含 "manifest": 的行：1 处（预期 1）
+    path 的 dirname ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass
+  旧：    "manifest": "node ../dsh-ui-projects/scripts/derive-manifest.mjs --package . --check",
+  新：    "manifest": "node ../../.dev/dsh-ui-projects/scripts/derive-manifest.mjs --package . --check",
+    path.resolve（旧）⇒ E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects\scripts\derive-manifest.mjs
+    path.resolve（新）⇒ E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects\scripts\derive-manifest.mjs
+  断言 · 新路径位于 .dev\dsh-ui-projects 之下 ⇒ OK
+  断言 · 层级 = 2（"../../.dev/dsh-ui-projects/"，不是 3 级）⇒ OK
+  断言 · 改后 JSON 合法 ⇒ OK
+
+====================================================================================================
+=== V1 · 改动前后整行 ===
+====================================================================================================
+C-1 packages\liquid-glass\scripts\build.mjs:行 30
+  改前：import { renderBundle } from '../../dsh-ui-projects/scripts/bundle-client.mjs'
+  改后：import { renderBundle } from ../../../.dev/dsh-ui-projects//scripts/bundle-client.mjs'
+C-2 packages\liquid-glass\scripts\derive-boot-css.mjs:行 39
+  改前：import { scopeCss } from '../../dsh-ui-projects/src/client/scope-css.js'
+  改后：import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+C-3 packages\liquid-glass\scripts\emitted-css.mjs:行 21
+  改前：import { scopeCss } from '../../dsh-ui-projects/src/client/scope-css.js'
+  改后：import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+C-4 packages\liquid-glass\scripts\verify.mjs:行 34
+  改前：import { scopeCss } from '../../dsh-ui-projects/src/client/scope-css.js'
+  改后：import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+C-5 packages/liquid-glass/package.json:行 66
+  改前：    "manifest": "node ../dsh-ui-projects/scripts/derive-manifest.mjs --package . --check",
+  改后：    "manifest": "node ../../.dev/dsh-ui-projects/scripts/derive-manifest.mjs --package . --check",
+
+====================================================================================================
+=== V2 · node --check 4 个 .mjs（改动后）===
+====================================================================================================
+（临时文件写在 E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\.tmpcheck-<name>.mjs；检查后立即删除。node --check 只验语法、不解析 import。）
+packages\liquid-glass\scripts\build.mjs ⇒ FAIL
+    E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\.tmpcheck-build.mjs:30
+    import { renderBundle } from ../../../.dev/dsh-ui-projects//scripts/bundle-client.mjs'
+                                 ^
+    SyntaxError: Unexpected token '.'
+        at checkSyntax (node:internal/main/check_syntax:84:5)
+packages\liquid-glass\scripts\derive-boot-css.mjs ⇒ FAIL
+    E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\.tmpcheck-derive-boot-css.mjs:39
+    import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+                             ^
+    SyntaxError: Unexpected token '.'
+        at checkSyntax (node:internal/main/check_syntax:84:5)
+packages\liquid-glass\scripts\emitted-css.mjs ⇒ FAIL
+    E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\.tmpcheck-emitted-css.mjs:21
+    import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+                             ^
+    SyntaxError: Unexpected token '.'
+        at checkSyntax (node:internal/main/check_syntax:84:5)
+packages\liquid-glass\scripts\verify.mjs ⇒ FAIL
+    E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\.tmpcheck-verify.mjs:34
+    import { scopeCss } from ../../../.dev/dsh-ui-projects//src/client/scope-css.js'
+                             ^
+    SyntaxError: Unexpected token '.'
+        at checkSyntax (node:internal/main/check_syntax:84:5)
+
+====================================================================================================
+=== FS 操作前置检查 ===
+====================================================================================================
+FS-1 目标目录：E:\dsh-plugins\dsh-plugin-skin\.dev
+  不存在（apply 时 mkdir -p）
+
+FS-2 源 E:\dsh-plugins\dsh-plugin-skin\packages\dsh-ui-projects：
+  存在 ⇒ YES
+  是 junction/symlink（lstat.isSymbolicLink）⇒ YES
+  解析目标 ⇒ E:\dsh\plugins\dsh-ui-projects
+  与预期目标一致 ⇒ YES
+
+FS-2 目标 E:\dsh-plugins\dsh-plugin-skin\.dev\dsh-ui-projects：
+  不存在 ⇒ OK
+
+====================================================================================================
+=== FS-3 / FS-4 预览 ===
+====================================================================================================
+FS-3 E:\dsh-plugins\dsh-plugin-skin\.gitignore
+  将删除的旧行 "/packages/dsh-ui-projects/"：0 处（本来就没有）
+  是否已含 "/.dev/"：NO（将追加）
+  检测到的行尾：CRLF ⇒ 追加行将使用同一种
+  改后行数：5 ⇒ 5
+
+FS-4 E:\dsh-plugins\dsh-plugin-skin\README.md
+  是否已含 "## Development-only dependencies"：NO（将追加 ${README_SECTION.length} 行）
+  将追加的原文：
+    
+    ## Development-only dependencies
+    
+    The framework package `dsh-ui-projects` lives in its own repository. This monorepo does not contain it. For local
+    development, a junction at `.dev/dsh-ui-projects` points at the framework checkout; the skin packages' scripts
+    import through it.
+    
+    `.dev/` is ignored by git and is never published.
+    
+
+====================================================================================================
+=== 汇总 ===
+====================================================================================================
+计划：4 个 FS 操作 + 5 处代码改动 + 2 处文本改动
+  · [mjs] C-1 packages\liquid-glass\scripts\build.mjs ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\build.mjs
+  · [mjs] C-2 packages\liquid-glass\scripts\derive-boot-css.mjs ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\derive-boot-css.mjs
+  · [mjs] C-3 packages\liquid-glass\scripts\emitted-css.mjs ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\emitted-css.mjs
+  · [mjs] C-4 packages\liquid-glass\scripts\verify.mjs ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\verify.mjs
+  · [json] C-5 packages/liquid-glass/package.json ⇒ E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\package.json
+  · [text] FS-3 .gitignore ⇒ E:\dsh-plugins\dsh-plugin-skin\.gitignore
+  · [text] FS-4 README.md ⇒ E:\dsh-plugins\dsh-plugin-skin\README.md
+  阻碍：C-1 packages\liquid-glass\scripts\build.mjs 尾段不一致
+  阻碍：C-2 packages\liquid-glass\scripts\derive-boot-css.mjs 尾段不一致
+  阻碍：C-3 packages\liquid-glass\scripts\emitted-css.mjs 尾段不一致
+  阻碍：C-4 packages\liquid-glass\scripts\verify.mjs 尾段不一致
+  阻碍：V2 C-1 packages\liquid-glass\scripts\build.mjs 语法检查失败
+  阻碍：V2 C-2 packages\liquid-glass\scripts\derive-boot-css.mjs 语法检查失败
+  阻碍：V2 C-3 packages\liquid-glass\scripts\emitted-css.mjs 语法检查失败
+  阻碍：V2 C-4 packages\liquid-glass\scripts\verify.mjs 语法检查失败
+apply 可行性：NO
+--apply 顺序：FS-1 ⇒ FS-2 ⇒ C-1..C-5 ⇒ FS-3 ⇒ FS-4 ⇒ V3；任何一步失败即停，已落盘的保留，不自动回滚。
+

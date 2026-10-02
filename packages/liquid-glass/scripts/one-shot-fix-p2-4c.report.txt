@@ -1,0 +1,70 @@
+# one-shot-fix-p2-4c report
+# mode: APPLY
+# one-shot: P2-4c (optional peer + four deletions in meta/)
+# mode:   APPLY
+# report: E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass\scripts\one-shot-fix-p2-4c.report.txt
+# 删除是永久的、且不生成备份 —— .bak 本身即备份，备份的备份无意义。
+
+====================================================================================================
+=== 编辑 1 · meta peerDependenciesMeta ===
+====================================================================================================
+文件：E:\dsh-plugins\dsh-plugin-skin\meta\package.json
+含 "peerDependencies" 的行：1 处（预期 1）
+含 "peerDependenciesMeta" 的行：0 处（预期 0）
+定位 peerDependencies 块：行 15 – 17
+改前（整块）：
+      "peerDependencies": {
+        "dsh-ui-projects": "^0.1.0"
+      },
+逗号/语法候选（由 JSON.parse 判定，不由人眼判定）：
+    peer 尾逗号=true / meta 尾逗号=false ⇒ 不合法（Expected ',' or '}' after property value in JSON at position 515 (line 21 column 3)）
+    peer 尾逗号=true / meta 尾逗号=true ⇒ 合法
+    peer 尾逗号=false / meta 尾逗号=false ⇒ 不合法（Expected ',' or '}' after property value in JSON at position 438 (line 18 column 3)）
+改后（整块）：
+      "peerDependencies": {
+        "dsh-ui-projects": "^0.1.0"
+      },
+      "peerDependenciesMeta": {
+        "dsh-ui-projects": { "optional": true }
+      },
+  "peerDependenciesMeta" 的收尾逗号：有（按解析结果选定）
+JSON 合法：OK
+
+====================================================================================================
+=== 删除 2 · meta 下 .bak ===
+====================================================================================================
+README.md.bak-legacy ⇒ 未找到（跳过）
+README.md.bak-p2-fix2 ⇒ 未找到（跳过）
+package.json.bak-legacy ⇒ 未找到（跳过）
+package.json.bak-p2-fix2 ⇒ 未找到（跳过）
+实际将删除数：0 / 4
+说明：README.md.bak-* 即使被 files 白名单排除，npm 仍会因 README* 前缀强制打包，故必须删除。
+
+====================================================================================================
+=== 前置检查 ===
+====================================================================================================
+OK   · 编辑 1 命中 1 处
+OK   · JSON 合法
+INFO · 删除目标中存在的：0 / 4（存在性不足不是阻碍，按存在性处理）
+
+====================================================================================================
+=== 汇总 ===
+====================================================================================================
+计划：1 处编辑 + 0 个文件删除
+  · [编辑] E:\dsh-plugins\dsh-plugin-skin\meta\package.json（行 15 – 17 整块替换）
+apply 可行性：YES
+⚠️ apply 会【永久删除】上面列出的文件，且不生成备份 —— 这是本轮指令的选择。
+
+====================================================================================================
+=== 落盘 ===
+====================================================================================================
+编辑 1 OK  E:\dsh-plugins\dsh-plugin-skin\meta\package.json（备份 E:\dsh-plugins\dsh-plugin-skin\meta\package.json.bak-p2-4c）
+删除报告（永久，不生成备份）：
+  not found · E:\dsh-plugins\dsh-plugin-skin\meta\README.md.bak-legacy
+  not found · E:\dsh-plugins\dsh-plugin-skin\meta\README.md.bak-p2-fix2
+  not found · E:\dsh-plugins\dsh-plugin-skin\meta\package.json.bak-legacy
+  not found · E:\dsh-plugins\dsh-plugin-skin\meta\package.json.bak-p2-fix2
+
+已删除 0 / 0 个存在的目标
+备份：E:\dsh-plugins\dsh-plugin-skin\meta\package.json.bak-p2-4c（仅编辑 1；删除的文件没有备份）
+本脚本不自动运行任何套件 —— 建议之后手动跑：npm pack --dry-run（在 meta 里）确认 tarball 干净。

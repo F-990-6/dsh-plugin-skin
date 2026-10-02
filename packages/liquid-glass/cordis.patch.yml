@@ -1,0 +1,11 @@
+# dsh-plugin-liquid-glass bundle patch: one host row over the web profile.
+#
+# This file is what `dsh.bundle.patch` points at, and without it a UI project package is never admitted to
+# the layer stack — the loader reconciles installed packages against `dsh.profile.bundles`, and only a
+# package that declares `dsh.bundle` joins it.
+#
+# The row id is this package's own, so two UI project packages never collide in the composition. The name
+# is the SCOPED package name, which is how the loader resolves the row from the profile's node_modules.
+- insert:
+    - id: ui-project-liquid-glass
+      name: "@xjl-resources/dsh-plugin-liquid-glass"

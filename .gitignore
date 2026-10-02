@@ -1,0 +1,11 @@
+node_modules/
+*.tgz
+npm-debug.log*
+.DS_Store
+/.dev/
+# P2 收尾补
+node_modules/
+.dev/
+*.bak-*
+*.bak-c2
+*.bak-revert
