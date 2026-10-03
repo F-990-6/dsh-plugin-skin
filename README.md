@@ -25,28 +25,54 @@ The framework package `dsh-ui-projects` is **not** part of this monorepo: it
 lives in its own repository. At development time it is reached through the
 `.dev/dsh-ui-projects` junction described further down.
 
-## Install
+## 安装
 
-Most users install the framework plus the meta package:
+### 你需要什么
 
-    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-skin
+- dsh ≥ 0.1.5-rc.1
+- Node.js ≥ 20
 
-Users who want a single skin install it directly:
+### 三个包
 
-    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-liquid-glass
+- `dsh-ui-projects` —— 框架，必装。注册表、设置页、首帧注入。
+- `@fn-x/dsh-plugin-skin` —— 聚合包。装它 = 装全部皮肤。
+- `@fn-x/dsh-plugin-liquid-glass` —— 单个皮肤。想挑皮肤的用户只装这个。
 
-The framework comes first: the meta package carries no code, it only lists
-skins as dependencies.
+### 一般用户
 
-## Usage
+1. `dsh plugin --profile web add dsh-ui-projects`
+2. `dsh plugin --profile web add @fn-x/dsh-plugin-skin`
+3. 重启 dsh web
 
-**Restart `dsh web` after installing**, then open **Settings › UI**. The skin
-appears there as a card with a switch beside its name.
+重启后：设置 → 界面 → 打开 Liquid Glass 开关。
 
-Skins ship **off**. Clicking the switch turns the skin on; clicking it again
-turns it off and restores the original interface. The choice is persisted with
-the rest of the dsh settings, so a reload shows the same state.
+### 想挑皮肤的用户
 
+只装要的皮肤包，不装聚合包：`dsh plugin --profile web add @fn-x/dsh-plugin-liquid-glass`
+
+### 本地开发
+
+从 GitHub 克隆两个仓库，用 `dsh plugin --profile web add <本地路径>` 装进 profile。改了源码后跑 `node scripts/build.mjs` 重 build，重启 dsh web。
+
+### 卸载
+
+- 只卸皮肤：`dsh plugin --profile web remove @fn-x/dsh-plugin-skin`
+- 全卸：再 remove 框架包
+
+### 故障排查
+
+| 现象 | 原因 |
+|---|---|
+| 设置里没有「界面」栏目 | 框架没装上 |
+| 有「界面」但没卡片 | 皮肤没装上 |
+| 装上了但页面无卡 | 上游加载问题（已知） |
+| 开关打开没变化 | 本地安装未 build |
+| 重开有闪烁 | dsh 版本低于 0.1.5-rc.1 |
+
+### 链接
+
+- npm：`dsh-ui-projects`、`@fn-x/dsh-plugin-skin`、`@fn-x/dsh-plugin-liquid-glass`
+- 源码：`github.com/F-990-6/dsh-ui-projects`、`github.com/F-990-6/dsh-plugin-skin`
 ## Adding a new skin
 
 1. Create `packages/<name>/` following the shape of an existing skin
