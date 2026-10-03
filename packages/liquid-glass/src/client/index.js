@@ -1,5 +1,5 @@
 /**
- * @xjl-resources/dsh-plugin-liquid-glass — browser half.
+ * @fn-x/dsh-plugin-liquid-glass — browser half.
  *
  * A UI project package's client entry is an ordinary Cordis client plugin, and this one is deliberately
  * as thin as the contract allows:

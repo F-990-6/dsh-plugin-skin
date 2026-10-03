@@ -1,4 +1,4 @@
-# @xjl-resources/dsh-plugin-skin
+# @fn-x/dsh-plugin-skin
 
 Aggregate package for dsh UI skins.
 
@@ -17,15 +17,15 @@ through `dependencies`.
 code; it only lists skins as dependencies.
 
     dsh plugin add dsh-ui-projects
-    dsh plugin add @xjl-resources/dsh-plugin-skin
+    dsh plugin add @fn-x/dsh-plugin-skin
 
 Or in one step:
 
-    dsh plugin add dsh-ui-projects @xjl-resources/dsh-plugin-skin
+    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-skin
 
 To install a single skin instead:
 
-    dsh plugin add dsh-ui-projects @xjl-resources/dsh-plugin-liquid-glass
+    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-liquid-glass
 
 **How the dependency resolves.** A published skin is named in `dependencies`
 with a caret range such as `^1.0.0`, and it is fetched from the npm registry.
@@ -38,10 +38,10 @@ with a `link:` specifier instead of a version range.
 
 Add a new skin:
 
-1. Publish it as `@xjl-resources/dsh-plugin-<name>`.
+1. Publish it as `@fn-x/dsh-plugin-<name>`.
 2. Add one line to `dependencies`:
 
-       "@xjl-resources/dsh-plugin-<name>": "<version>"
+       "@fn-x/dsh-plugin-<name>": "<version>"
 
 That is the whole change — this package stays empty otherwise.
 

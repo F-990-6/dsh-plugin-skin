@@ -1,5 +1,5 @@
 {
-  "name": "@xjl-resources/dsh-plugin-skin",
+  "name": "@fn-x/dsh-plugin-skin",
   "version": "1.0.0",
   "files": [
     "README.md",
@@ -19,10 +19,10 @@
     "dsh-ui-projects": { "optional": true }
   },
   "dependencies": {
-    "@xjl-resources/dsh-plugin-liquid-glass": "^1.0.0"
+    "@fn-x/dsh-plugin-liquid-glass": "^1.0.0"
   },
   "license": "MIT",
-  "author": "xjl-resources",
+  "author": "fn-x",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"

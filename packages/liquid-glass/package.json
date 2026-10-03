@@ -1,5 +1,5 @@
 {
-  "name": "@xjl-resources/dsh-plugin-liquid-glass",
+  "name": "@fn-x/dsh-plugin-liquid-glass",
   "version": "1.0.0",
   "description": "Liquid Glass as a UI project package for dsh-ui-projects: an iOS-style translucent material, with its own first-paint sheet and its own maintenance wrapper.",
   "type": "module",
@@ -74,7 +74,7 @@
     "test": "node scripts/verify.mjs"
   },
   "license": "MIT",
-  "author": "xjl-resources",
+  "author": "fn-x",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"

@@ -1,5 +1,5 @@
 /**
- * @xjl-resources/dsh-plugin-liquid-glass — host half.
+ * @fn-x/dsh-plugin-liquid-glass — host half.
  *
  * This file is the whole host-side contract of a UI project package, and it is three statements long on
  * purpose:

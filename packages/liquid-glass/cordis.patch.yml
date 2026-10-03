@@ -8,4 +8,4 @@
 # is the SCOPED package name, which is how the loader resolves the row from the profile's node_modules.
 - insert:
     - id: ui-project-liquid-glass
-      name: "@xjl-resources/dsh-plugin-liquid-glass"
+      name: "@fn-x/dsh-plugin-liquid-glass"

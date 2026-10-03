@@ -1,4 +1,4 @@
-# @xjl-resources/dsh-plugin-liquid-glass
+# @fn-x/dsh-plugin-liquid-glass
 
 Liquid Glass as a **UI project package** for `dsh-ui-projects`: an iOS-style translucent material —
 frosted layers, hairline highlights, large radii, depth built from real translucency — declared through

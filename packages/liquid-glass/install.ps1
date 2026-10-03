@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Maintain @xjl-resources/dsh-plugin-liquid-glass through the framework's install.ps1.
+    Maintain @fn-x/dsh-plugin-liquid-glass through the framework's install.ps1.
 
 .DESCRIPTION
     The card's maintenance commands are printed as `install.ps1 -Snapshot`, `-Update`,

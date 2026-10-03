@@ -13,9 +13,9 @@ exactly as it was.
 ## Layout
 
 - `packages/<name>/` — one npm package per skin, published as
-  `@xjl-resources/dsh-plugin-<name>`. `packages/liquid-glass/` is the one that
+  `@fn-x/dsh-plugin-<name>`. `packages/liquid-glass/` is the one that
   exists today.
-- `meta/` — the `@xjl-resources/dsh-plugin-skin` package: aggregates
+- `meta/` — the `@fn-x/dsh-plugin-skin` package: aggregates
   every skin in `dependencies` and registers none of them itself.
 
 Both are npm workspaces of this repository, declared in the root
@@ -29,11 +29,11 @@ lives in its own repository. At development time it is reached through the
 
 Most users install the framework plus the meta package:
 
-    dsh plugin add dsh-ui-projects @xjl-resources/dsh-plugin-skin
+    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-skin
 
 Users who want a single skin install it directly:
 
-    dsh plugin add dsh-ui-projects @xjl-resources/dsh-plugin-liquid-glass
+    dsh plugin add dsh-ui-projects @fn-x/dsh-plugin-liquid-glass
 
 The framework comes first: the meta package carries no code, it only lists
 skins as dependencies.
@@ -52,7 +52,7 @@ the rest of the dsh settings, so a reload shows the same state.
 1. Create `packages/<name>/` following the shape of an existing skin
    (`package.json` + `src/` + `lib/client.js`, declares
    `requires: ['dsh-ui-projects']`).
-2. Publish it as `@xjl-resources/dsh-plugin-<name>`.
+2. Publish it as `@fn-x/dsh-plugin-<name>`.
 3. Add it to `meta/package.json`'s `dependencies`.
 
 ## Compatibility

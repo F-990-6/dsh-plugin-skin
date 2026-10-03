@@ -20,7 +20,7 @@
 **未来修法**（可选）：
 
 a) 把 `derive-manifest.mjs` 复制一份到皮肤包的 `scripts/` 下（重复代码——易脱节）
-b) 抽成共享 dev 依赖——`@xjl-resources/dsh-ui-projects-dev` 之类——发布到 npm——皮肤包 devDependencies 引用
+b) 抽成共享 dev 依赖——`@fn-x/dsh-ui-projects-dev` 之类——发布到 npm——皮肤包 devDependencies 引用
 c) 保持现状——**monorepo 内部开发工具**——**不发布**
 
 当前选 c。
@@ -78,13 +78,13 @@ c) 保持现状——**monorepo 内部开发工具**——**不发布**
     npm init -y
     npm install "E:\dsh-plugins\dsh-plugin-skin\packages\liquid-glass"
     npm install "E:\dsh-plugins\dsh-plugin-skin\meta"
-    Get-ChildItem node_modules\@xjl-resources | Select-Object Name, LinkType, Target
+    Get-ChildItem node_modules\@fn-x | Select-Object Name, LinkType, Target
 
-**判读**：node_modules\@xjl-resources 下应同时出现
+**判读**：node_modules\@fn-x 下应同时出现
 dsh-plugin-liquid-glass 与 dsh-plugin-skin。
 
 **注意**：必须先装 liquid-glass，再装 meta；否则 meta 的
-dependencies（@xjl-resources/dsh-plugin-liquid-glass@^1.0.0）会去 registry 找 → 404。
+dependencies（@fn-x/dsh-plugin-liquid-glass@^1.0.0）会去 registry 找 → 404。
 
 **处置**：本轮由用户执行；结果回填本节。
 
@@ -96,7 +96,7 @@ dependencies（@xjl-resources/dsh-plugin-liquid-glass@^1.0.0）会去 registry �
 
 **前置**：旧位置保留不删（运行依赖）；新包发布到 npm 后可切。
 
-**修法**：发布后切 dsh 配置指向新包 @xjl-resources/dsh-plugin-liquid-glass。
+**修法**：发布后切 dsh 配置指向新包 @fn-x/dsh-plugin-liquid-glass。
 
 **处置**：待 npm 发布后处理。
 
@@ -113,7 +113,7 @@ dependencies（@xjl-resources/dsh-plugin-liquid-glass@^1.0.0）会去 registry �
 
 ## 7 · example 包装不进 dsh（A 阶段止损）
 
-**现象**：`@xjl-resources/dsh-plugin-example*` 无法通过手改 profile 的 cordis.patch.yml 加载。dsh web 重启后（进程 StartTime 晚于 patch 编辑时间，已排除"未重启"），页面 `[data-example-dialog]` 仍 = 0，`window.__dshUiProjectRows` 无 example。
+**现象**：`@fn-x/dsh-plugin-example*` 无法通过手改 profile 的 cordis.patch.yml 加载。dsh web 重启后（进程 StartTime 晚于 patch 编辑时间，已排除"未重启"），页面 `[data-example-dialog]` 仍 = 0，`window.__dshUiProjectRows` 无 example。
 
 **已试**：14 步诊断——读两条包内 patch、改 profile 层 patch、重启 dsh web、对照 liquid-glass 包 patch（已成功加载的样本）。
 
