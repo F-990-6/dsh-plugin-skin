@@ -3,6 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "description": "Monorepo for dsh skin packages. Each skin is its own npm package; meta/ aggregates them.",
+  "license": "MIT",
+  "author": "xjl-resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"
+  },
+  "homepage": "https://github.com/xjl-resources/dsh-plugin-skin#readme",
+  "bugs": {
+    "url": "https://github.com/xjl-resources/dsh-plugin-skin/issues"
+  },
   "workspaces": [
     "packages/liquid-glass",
     "meta"

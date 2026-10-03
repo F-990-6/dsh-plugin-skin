@@ -73,5 +73,14 @@
     "check": "node scripts/check.mjs",
     "test": "node scripts/verify.mjs"
   },
-  "license": "UNLICENSED"
+  "license": "MIT",
+  "author": "xjl-resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"
+  },
+  "homepage": "https://github.com/xjl-resources/dsh-plugin-skin#readme",
+  "bugs": {
+    "url": "https://github.com/xjl-resources/dsh-plugin-skin/issues"
+  }
 }

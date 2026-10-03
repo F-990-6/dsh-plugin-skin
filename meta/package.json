@@ -21,5 +21,14 @@
   "dependencies": {
     "@xjl-resources/dsh-plugin-liquid-glass": "^1.0.0"
   },
-  "license": "UNLICENSED"
+  "license": "MIT",
+  "author": "xjl-resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"
+  },
+  "homepage": "https://github.com/xjl-resources/dsh-plugin-skin#readme",
+  "bugs": {
+    "url": "https://github.com/xjl-resources/dsh-plugin-skin/issues"
+  }
 }
