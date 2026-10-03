@@ -1,6 +1,6 @@
 {
   "name": "@fn-x/dsh-plugin-liquid-glass",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Liquid Glass as a UI project package for dsh-ui-projects: an iOS-style translucent material, with its own first-paint sheet and its own maintenance wrapper.",
   "type": "module",
   "main": "lib/index.js",
@@ -32,7 +32,11 @@
       "type": "skin",
       "scope": "global",
       "defaultEnabled": false,
-      "supports": ["light", "dark", "mobile"],
+      "supports": [
+        "light",
+        "dark",
+        "mobile"
+      ],
       "perfLevel": "high",
       "testItems": [
         {
@@ -77,10 +81,10 @@
   "author": "fn-x",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"
+    "url": "git+https://github.com/F-990-6/dsh-plugin-skin.git"
   },
-  "homepage": "https://github.com/xjl-resources/dsh-plugin-skin#readme",
+  "homepage": "https://github.com/F-990-6/dsh-plugin-skin#readme",
   "bugs": {
-    "url": "https://github.com/xjl-resources/dsh-plugin-skin/issues"
+    "url": "https://github.com/F-990-6/dsh-plugin-skin/issues"
   }
 }

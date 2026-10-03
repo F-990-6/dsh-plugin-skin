@@ -1,6 +1,6 @@
 {
   "name": "@fn-x/dsh-plugin-skin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "files": [
     "README.md",
     "package.json"
@@ -16,19 +16,21 @@
     "dsh-ui-projects": "^0.1.0"
   },
   "peerDependenciesMeta": {
-    "dsh-ui-projects": { "optional": true }
+    "dsh-ui-projects": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@fn-x/dsh-plugin-liquid-glass": "^1.0.0"
+    "@fn-x/dsh-plugin-liquid-glass": "^1.0.1"
   },
   "license": "MIT",
   "author": "fn-x",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xjl-resources/dsh-plugin-skin.git"
+    "url": "git+https://github.com/F-990-6/dsh-plugin-skin.git"
   },
-  "homepage": "https://github.com/xjl-resources/dsh-plugin-skin#readme",
+  "homepage": "https://github.com/F-990-6/dsh-plugin-skin#readme",
   "bugs": {
-    "url": "https://github.com/xjl-resources/dsh-plugin-skin/issues"
+    "url": "https://github.com/F-990-6/dsh-plugin-skin/issues"
   }
 }
