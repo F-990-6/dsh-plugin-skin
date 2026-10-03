@@ -3,7 +3,7 @@
  *
  * Source: @xjl-resources/dsh-plugin-liquid-glass@1.0.0 → package.json → dsh.uiProject, with `package` and `version`
  * taken from the package's own manifest. Regenerate with:
- *   node scripts/derive-manifest.mjs --package "E:/dsh-plugins/dsh-plugin-skin/packages/liquid-glass"
+ *   node scripts/derive-manifest.mjs --package "<path-to-package>"
  */
 module.exports = {
   package: "@xjl-resources/dsh-plugin-liquid-glass",
