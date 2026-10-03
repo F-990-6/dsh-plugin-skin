@@ -9,3 +9,7 @@ node_modules/
 *.bak-*
 *.bak-c2
 *.bak-revert
+
+# P2 过程产物（2026-10-03 开源前清理）
+one-shot-*.mjs
+one-shot-*.report.txt
