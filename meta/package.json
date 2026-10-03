@@ -1,15 +1,19 @@
 {
   "name": "@fn-x/dsh-plugin-skin",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "files": [
     "README.md",
-    "package.json"
+    "package.json",
+    "cordis.patch.yml"
   ],
   "description": "Aggregate package for dsh UI skins. Installs every skin in packages/ through its dependencies, and registers none of them itself.",
   "type": "module",
   "dsh": {
     "compatibility": {
       "dsh": ">=0.1.5-rc.1"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
     }
   },
   "peerDependencies": {

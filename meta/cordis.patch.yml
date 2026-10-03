@@ -1,0 +1,9 @@
+# dsh-plugin-skin 聚合包 patch：把每个皮肤的 host row 都插进来。
+#
+# 这些 row 的 name 是 scoped 包名，loader 从 profile 的 node_modules 解析——
+# 而 npm 装这个聚合包时，dependencies 里的每个皮肤已经自动装在 node_modules 里了。
+#
+# 未来加新皮肤时，在 dependencies 加一行 + 在这里加一条 insert 即可。
+- insert:
+    - id: ui-project-liquid-glass
+      name: "@fn-x/dsh-plugin-liquid-glass"
