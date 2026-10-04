@@ -11,6 +11,10 @@ This package is the monorepo's aggregate exit: the skins themselves live in
 
 Monorepo: https://github.com/F-990-6/dsh-plugin-skin
 
+## 安装
+
+可以直接在 dsh 插件中添加、安装 `dsh-ui-projects` 和 `@fn-x/dsh-plugin-skin`。
+
 ### 你需要什么
 
 | 项 | 要求 |
