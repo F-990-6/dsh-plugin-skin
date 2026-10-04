@@ -27,6 +27,8 @@ lives in its own repository. At development time it is reached through the
 
 ## 安装
 
+| 可以直接再dsh插件中添加、安装 dsh-ui-projects和@fn-x/dsh-plugin-skin |
+
 ### 你需要什么
 
 | 项 | 要求 |
