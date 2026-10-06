@@ -188,20 +188,44 @@ body[data-ui-project-liquid-glass="on"]{
   --lg-bg-light: #f2f2f7;
   --lg-bg-dark: #000000;
 
-  --lg-glass-bg-light: rgb(255 255 255 / 58%);
-  --lg-glass-bg-dark: rgb(28 28 30 / 52%);
+  --lg-glass-bg-light: rgb(255 255 255 / 54%);
+  --lg-glass-bg-dark: rgb(28 28 30 / 58%);
 
-  --lg-glass-border-light: rgb(255 255 255 / 55%);
-  --lg-glass-border-dark: rgb(255 255 255 / 12%);
+  --lg-glass-border-light: rgb(255 255 255 / 14%);
+  --lg-glass-border-dark: rgb(255 255 255 / 10%);
 
-  --lg-glass-blur: 20px;
-  --lg-glass-saturate: 180%;
-  --lg-glass-radius: 22px;
-  --lg-glass-shadow: 0 10px 30px rgb(0 0 0 / 12%);
-  --lg-glass-inner-highlight: inset 0 1px 0 rgb(255 255 255 / 45%);
+  --lg-glass-blur: 24px;
+  --lg-glass-saturate: 140%;
+  --lg-glass-radius: 24px;
+  --lg-glass-shadow: 0 24px 60px rgb(0 0 0 / 6%);
+
+  --lg-glass-inner-highlight: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 4%);
+
+  --lg-glass-fill-light: rgb(255 255 255 / 80%);
+  --lg-glass-fill-dark: rgb(40 44 54 / 84%);
+
+  --lg-glass-composer-light: rgb(255 255 255 / 6%);
+  --lg-glass-composer-dark: rgb(28 28 30 / 10%);
+
+  --lg-glass-composer-text-shadow-light: 0 1px 0 rgb(255 255 255 / 100%);
+  --lg-glass-composer-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 85%);
+
+  --lg-glass-panel-light: rgb(255 255 255 / 46%);
+  --lg-glass-panel-dark: rgb(28 28 30 / 50%);
+
+  --lg-glass-panel-inner-light: rgb(255 255 255 / 46%);
+  --lg-glass-panel-inner-dark: rgb(30 33 42 / 50%);
+  --lg-glass-panel-inner-strong-light: rgb(255 255 255 / 50%);
+  --lg-glass-panel-inner-strong-dark: rgb(30 33 42 / 54%);
+
+  --lg-glass-panel-text-shadow-light: 0 1px 0 rgb(255 255 255 / 100%);
+  --lg-glass-panel-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 85%);
+
+  --lg-glass-code-light: #EDEAE4;
+  --lg-glass-code-dark: #202327;
 
   --lg-glass-blur-mobile: 16px;
-  --lg-glass-blur-menu: 30px;
+  --lg-glass-blur-menu: 24px;
 
   --lg-glass-blur-medium: 16px;
   --lg-glass-blur-low: 12px;
@@ -215,6 +239,14 @@ body[data-ui-project-liquid-glass="on"]{
   --lg-accent-alt-current: var(--lg-accent-alt);
   --lg-glass-bg: var(--lg-glass-bg-light);
   --lg-glass-border: var(--lg-glass-border-light);
+  --lg-glass-fill: var(--lg-glass-fill-light);
+  --lg-glass-composer: var(--lg-glass-composer-light);
+  --lg-glass-composer-text-shadow: var(--lg-glass-composer-text-shadow-light);
+  --lg-glass-panel: var(--lg-glass-panel-light);
+  --lg-glass-panel-text-shadow: var(--lg-glass-panel-text-shadow-light);
+  --lg-glass-panel-inner: var(--lg-glass-panel-inner-light);
+  --lg-glass-panel-inner-strong: var(--lg-glass-panel-inner-strong-light);
+  --lg-glass-code: var(--lg-glass-code-light);
   --lg-fill: var(--lg-glass-bg);
   --lg-highlight: var(--lg-glass-inner-highlight);
 
@@ -233,19 +265,41 @@ body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
   --lg-accent-alt-current: var(--lg-accent-alt-dark);
   --lg-glass-bg: var(--lg-glass-bg-dark);
   --lg-glass-border: var(--lg-glass-border-dark);
+  --lg-glass-fill: var(--lg-glass-fill-dark);
+  --lg-glass-composer: var(--lg-glass-composer-dark);
+  --lg-glass-composer-text-shadow: var(--lg-glass-composer-text-shadow-dark);
+  --lg-glass-panel: var(--lg-glass-panel-dark);
+  --lg-glass-panel-text-shadow: var(--lg-glass-panel-text-shadow-dark);
+  --lg-glass-panel-inner: var(--lg-glass-panel-inner-dark);
+  --lg-glass-panel-inner-strong: var(--lg-glass-panel-inner-strong-dark);
+  --lg-glass-code: var(--lg-glass-code-dark);
 
   background-image:
-  radial-gradient(120% 80% at 12% -10%, rgb(10 132 255 / 26%) 0%, transparent 60%),
-  radial-gradient(110% 75% at 105% 8%, rgb(94 92 230 / 22%) 0%, transparent 58%),
-  radial-gradient(140% 90% at 65% 115%, rgb(10 132 255 / 14%) 0%, transparent 62%);
+  radial-gradient(90% 70% at 6% -8%, rgb(10 132 255 / 52%) 0%, rgb(10 132 255 / 18%) 34%, transparent 66%),
+  radial-gradient(70% 62% at 104% 2%, rgb(94 92 230 / 48%) 0%, rgb(94 92 230 / 16%) 36%, transparent 70%),
+  radial-gradient(130% 95% at 58% 116%, rgb(10 132 255 / 36%) 0%, rgb(10 132 255 / 12%) 40%, transparent 66%),
+  linear-gradient(155deg, rgb(255 255 255 / 0%) 42%, rgb(94 92 230 / 16%) 100%),
+  radial-gradient(circle at 1px 1px, rgb(255 255 255 / 4%) 1px, transparent 0);
+  background-size: auto, auto, auto, auto, 3px 3px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
   body[data-ui-project-liquid-glass="on"]{
     --lg-glass-bg: #fff;
+    --lg-glass-fill: #fff;
+    --lg-glass-composer: #fff;
+    --lg-glass-panel: #fff;
+    --lg-glass-panel-inner: #fff;
+    --lg-glass-panel-inner-strong: #fff;
   }
   body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
     --lg-glass-bg: #1c1c1e;
+    --lg-glass-fill: #1c1c1e;
+    --lg-glass-composer: #1c1c1e;
+    --lg-glass-panel: #1c1c1e;
+    --lg-glass-panel-inner: #1c1c1e;
+    --lg-glass-panel-inner-strong: #1c1c1e;
   }
 }
 
@@ -255,9 +309,19 @@ body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
   }
   body[data-ui-project-liquid-glass="on"]{
     --lg-glass-bg: #fff;
+    --lg-glass-fill: #fff;
+    --lg-glass-composer: #fff;
+    --lg-glass-panel: #fff;
+    --lg-glass-panel-inner: #fff;
+    --lg-glass-panel-inner-strong: #fff;
   }
   body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
     --lg-glass-bg: #1c1c1e;
+    --lg-glass-fill: #1c1c1e;
+    --lg-glass-composer: #1c1c1e;
+    --lg-glass-panel: #1c1c1e;
+    --lg-glass-panel-inner: #1c1c1e;
+    --lg-glass-panel-inner-strong: #1c1c1e;
   }
 }
 
@@ -267,9 +331,19 @@ body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
   }
   body[data-ui-project-liquid-glass="on"]{
     --lg-glass-bg: #fff;
+    --lg-glass-fill: #fff;
+    --lg-glass-composer: #fff;
+    --lg-glass-panel: #fff;
+    --lg-glass-panel-inner: #fff;
+    --lg-glass-panel-inner-strong: #fff;
   }
   body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
     --lg-glass-bg: #1c1c1e;
+    --lg-glass-fill: #1c1c1e;
+    --lg-glass-composer: #1c1c1e;
+    --lg-glass-panel: #1c1c1e;
+    --lg-glass-panel-inner: #1c1c1e;
+    --lg-glass-panel-inner-strong: #1c1c1e;
   }
 }
 
@@ -279,8 +353,18 @@ body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
   }
   body[data-ui-project-liquid-glass="on"]{
     --lg-glass-bg: #fff;
+    --lg-glass-fill: #fff;
+    --lg-glass-composer: #fff;
+    --lg-glass-panel: #fff;
+    --lg-glass-panel-inner: #fff;
+    --lg-glass-panel-inner-strong: #fff;
   }
   body[data-ui-project-liquid-glass="on"][data-ds-dark-theme]{
     --lg-glass-bg: #1c1c1e;
+    --lg-glass-fill: #1c1c1e;
+    --lg-glass-composer: #1c1c1e;
+    --lg-glass-panel: #1c1c1e;
+    --lg-glass-panel-inner: #1c1c1e;
+    --lg-glass-panel-inner-strong: #1c1c1e;
   }
 }

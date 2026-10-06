@@ -89,6 +89,28 @@ const material = String(scopeCss(MARKER, glassCss))
 /** What `allCss()` would hold with this skin on. */
 const css = `${palette}\n${material}`
 
+/*
+ * THE OVERLAY, READ FROM ITS SOURCE RATHER THAN FROM ITS EXPORT (2026-10-06).
+ *
+ * `src/client/index.js` exports `__overlay.OVERLAY_CSS`, and that is the honest entry point — but it is
+ * a module-level SNAPSHOT of a value the package only ever serves as a BUILT bundle (`lib/client.js`,
+ * produced by `scripts/build.mjs`). Reaching it from here would mean importing that bundle, and then
+ * every edit to the overlay — or to `glass.css`, which it quotes — would be invisible to this suite
+ * until someone rebuilt. A suite that silently lags the sources is worse than one with a narrower
+ * scope, so the three template literals are lifted out of the file directly.
+ *
+ * That extraction is safe by the file's OWN rule: "inside these template literals there is CSS and
+ * nothing else. No backticks, no dollar braces, no backslashes." The rule exists because a backtick
+ * inside one of them ended the string and took the whole application down once already.
+ */
+const overlaySource = readFileSync(join(packageRoot, 'src', 'client', 'index.js'), 'utf8')
+const overlaySheets = [...overlaySource.matchAll(/const (OVERLAY_[A-Z]+) = `([\s\S]*?)`/g)].map((match) => ({
+  name: match[1],
+  text: match[2],
+}))
+/** Every overlay rule, in one string, in the order `OVERLAY_CSS` concatenates them. */
+const overlay = overlaySheets.map((sheet) => sheet.text).join('\n')
+
 /** Every custom property DECLARED in a stylesheet (`--name:`), as opposed to merely referenced. */
 const declaredTokens = (text) => {
   const found = new Set()
@@ -270,18 +292,126 @@ await test('the material transparency is fixed, and no control can thin it out',
   )
 })
 
-await test('the column marker is used only to select the frame, never to lay it out', () => {
-  const columnSelectors = [...css.matchAll(/([^{}]*\[data-ui-skin-column\][^{}]*)\{/g)].map((match) => match[1].trim())
-  truthy(columnSelectors.length > 0, 'the column marker is used to find the frame')
-  for (const selector of columnSelectors) {
-    truthy(
-      selector.includes(':has('),
-      `the column marker only ever appears inside :has() (found: ${selector})`,
-    )
-    for (const forbidden of ['isolation', 'z-index', 'overflow', 'contain:', 'clip-path', 'backdrop-filter']) {
-      excludes(selector, forbidden, `a column selector never carries ${forbidden}`)
+await test('the column marker selects the frame or rebinds the column’s tokens, and never lays the column out', () => {
+  /*
+   * TWO CLASSES OF SELECTOR, AND THE OLD CHECK COULD NOT TELL THEM APART (2026-10-06).
+   *
+   * The rule here used to be `selector.includes(':has(')` — a PROXY for the intent in the test's own
+   * name, and weak in both directions:
+   *
+   *   · it was satisfied by a `:has(` ANYWHERE in the selector, so `body :is([data-ui-skin-column]):
+   *     has([data-dockit-pane-panel])` passed while still making the COLUMN the subject of the rule;
+   *   · it failed two rules whose subject is the column and whose declaration is nothing but a token
+   *     rebind — and a token rebind is neither "selecting the frame" nor "laying anything out", the two
+   *     things this test exists to prevent.
+   *
+   * So the classification is explicit, and each class is held to what actually applies to it:
+   *
+   *   FRAME    every occurrence of the marker sits inside a `:has(...)` argument — the marker NAMES the
+   *            frame from its marked children. These may paint: that is where the frost lives
+   *            (`::before`, `backdrop-filter`), and they must keep using `:has(`.
+   *
+   *   COLUMN   the marker is the SUBJECT of the rule. These may rebind custom properties and nothing
+   *            else. Rebound tokens reach the column's descendants by inheritance, which is the only
+   *            way to give a ground to a subtree whose painter publishes no stable hook — that is a
+   *            legitimate technique and this test now says so. What stays forbidden is a layout
+   *            property, a filter (which creates a containing block for `fixed` descendants — the
+   *            settings-panel bug in the file header), and any paint that is a LITERAL: an element's
+   *            own declaration beats an inherited one, so a literal here is exactly what made the
+   *            panel's inner layers immune to the no-transparency branches. Painting THROUGH a
+   *            `--lg-glass-*` token is allowed, because a branch can reach that.
+   */
+  /*
+   * BOTH PATHS TO THE SAME PAINT, NOT ONLY THE SCOPED ONE (2026-10-06).
+   *
+   * The skin reaches the shell's boxes twice: through `ctx.insertCss`, which the runtime scopes to the
+   * project marker, and through the overlay in `src/client/index.js`, which is inserted into `<head>`
+   * raw. Every rule in this test was checked against the FIRST path only, so the second one — the path
+   * that exists precisely because it cannot be out-specified — was unchecked. Both are read here.
+   *
+   * The rules are matched by the same regex in both, because the overlay spells the project marker out
+   * by hand instead of being rewritten with it: what is compared is the shape of the SELECTOR, which is
+   * the same question either way.
+   */
+  const rulesIn = (text, source) =>
+    [...String(text).matchAll(/([^{}]*\[data-ui-skin-column\][^{}]*)\{([^{}]*)\}/g)].map((match) => ({
+      source,
+      selector: match[1].replace(/\s+/g, ' ').trim(),
+      declaration: match[2].replace(/\s+/g, ' ').trim(),
+    }))
+  equal(
+    overlaySheets.map((sheet) => sheet.name),
+    ['OVERLAY_DIALOG', 'OVERLAY_DENSE', 'OVERLAY_DOCK'],
+    'the three overlay sheets were found in `src/client/index.js`, so this check is not blind to them',
+  )
+  const scopedRules = rulesIn(css, 'scoped')
+  const overlayRules = rulesIn(overlay, 'overlay')
+  truthy(overlayRules.length > 0, `the overlay contributes marker rules to this check (${overlayRules.length})`)
+  const columnRules = [...scopedRules, ...overlayRules]
+  truthy(columnRules.length > 0, 'the column marker is used to find the frame')
+
+  /** Whether one occurrence of the marker lies OUTSIDE every `:has(...)` argument. */
+  const isOutsideHas = (selector, index) => {
+    for (let at = selector.lastIndexOf(':has(', index); at !== -1; at = selector.lastIndexOf(':has(', at - 1)) {
+      let depth = 0
+      for (let cursor = at + 4; cursor < selector.length; cursor += 1) {
+        if (selector[cursor] === '(') depth += 1
+        else if (selector[cursor] === ')') {
+          depth -= 1
+          if (depth === 0) {
+            if (cursor > index) return false
+            break
+          }
+        }
+      }
     }
+    return true
   }
+  const subjectOfColumn = (selector) =>
+    [...selector.matchAll(/\[data-ui-skin-column\]/g)].some((match) => isOutsideHas(selector, match.index))
+
+  const frames = columnRules.filter((rule) => !subjectOfColumn(rule.selector))
+  const columns = columnRules.filter((rule) => subjectOfColumn(rule.selector))
+  const split = (rules) => ['scoped', 'overlay'].map((source) => `${source}=${rules.filter((rule) => rule.source === source).length}`).join(' ')
+  truthy(frames.length > 0, `the frame is still selected through its marked children (${frames.length}: ${split(frames)})`)
+  truthy(columns.length > 0, `and the column itself is still reachable, for tokens (${columns.length}: ${split(columns)})`)
+
+  for (const rule of frames) {
+    contains(rule.selector, ':has(', `a frame selector names the marker inside :has() (found in ${rule.source}: ${rule.selector})`)
+  }
+
+  for (const rule of columns) {
+    /*
+     * Applied to the DECLARATION, not to the selector text. The old list was checked against the
+     * selector, where none of these words can appear — so all six passed on every rule and proved
+     * nothing.
+     */
+    for (const forbidden of [
+      'filter',
+      'isolation',
+      'z-index',
+      'overflow',
+      'contain:',
+      'clip-path',
+      'display',
+      'position',
+      'width',
+      'height',
+      'margin',
+      'padding',
+    ]) {
+      excludes(rule.declaration, forbidden, `a column rule never declares ${forbidden} (found in ${rule.source}: ${rule.selector})`)
+    }
+    /** A paint is allowed only through a token; everything that is not a custom property must be one. */
+    const stray = rule.declaration
+      .split(';')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry !== '')
+      .filter((entry) => !entry.startsWith('--'))
+      .filter((entry) => !/^background(-color)?:\s*var\(--lg-glass-/.test(entry))
+    equal(stray, [], `a column rule only rebinds tokens, or paints through one (found in ${rule.source}: ${rule.selector})`)
+  }
+
   // The stacking context the frost needs comes from `isolation`, which does NOT capture fixed descendants
   // — the one property that gives a stacking context without breaking the settings dialog.
   contains(css, 'isolation: isolate', 'the stacking context comes from isolation')
@@ -316,18 +446,54 @@ await test('the composer stat rows are hidden, and without moving the composer',
 
 await test("the composer is given the frame material, with the frost kept off the card", () => {
   const flat = css.replace(/\s+/g, ' ')
-  const bodyOf = (selector) => {
-    const at = flat.indexOf(`${selector}{`)
-    if (at === -1) return ''
-    const end = flat.indexOf('}', at)
-    return end === -1 ? '' : flat.slice(at + selector.length + 1, end)
+  /*
+   * THE CARD'S SELECTOR IS MATCHED, NOT SPELLED — and only at brace depth zero (WIP 2026-10-05).
+   *
+   * This was `const CARD = `${MARKER} [data-composer-card]`` plus a plain `indexOf`. Two things in the
+   * WIP broke that, and both are about the SELECTOR rather than about the declarations this test exists
+   * to check:
+   *
+   *   · the rule is now written `body :is([data-composer-card])`. The `:is()` is the whole point of that
+   *     round: the `:where()` form was (0,1,1) after scoping and lost to the shell's own two-class
+   *     selector, so the tuned declarations never reached the element at all;
+   *   · a NEW `@supports (corner-shape: superellipse(1.5))` block carries a rule with the SAME
+   *     `:is([data-composer-card])` marker, and it comes FIRST in the sheet — so a first-match lookup
+   *     would read that nested rule's body and quietly assert the wrong declarations.
+   *
+   * Hence: the marker is matched with the `:is(` wrapper optional, and the first match at BRACE DEPTH
+   * ZERO wins, which is the top-level rule the composer's card is actually painted by.
+   */
+  const depthAt = (index) => {
+    let depth = 0
+    for (let at = 0; at < index; at += 1) {
+      if (flat[at] === '{') depth += 1
+      else if (flat[at] === '}') depth -= 1
+    }
+    return depth
   }
-  const CARD = `${MARKER} [data-composer-card]`
-  const card = bodyOf(CARD)
-  const frost = bodyOf(`${CARD}::before`)
+  const cardOf = (suffix) => {
+    const marker = MARKER.replace(/[[\]"]/g, (c) => `\\${c}`)
+    const tail = suffix.replace(/[.*+?^${}()|[\]\\]/g, (c) => `\\${c}`)
+    const pattern = new RegExp(`${marker} (?::is\\()?\\[data-composer-card\\]\\)?${tail}\\{`, 'g')
+    for (const match of flat.matchAll(pattern)) {
+      if (depthAt(match.index) !== 0) continue
+      const open = match.index + match[0].length - 1
+      const end = flat.indexOf('}', open)
+      return end === -1 ? '' : flat.slice(open + 1, end)
+    }
+    return ''
+  }
+  const card = cardOf('')
+  const frost = cardOf('::before')
   truthy(card !== '', 'the composer card has a rule')
   truthy(frost !== '', 'and a frost layer of its own')
-  contains(card, 'background: var(--lg-glass-bg)', 'the glass fill')
+  /*
+   * The card's fill is the COMPOSER's own tier, not the material one it used to share with the dialogs.
+   * `glass.css` states why: "THE COMPOSER'S OWN TIER… a per-surface pair, so thinning this one cannot
+   * thin the dialogs with it". The card reads `--lg-glass-composer` (`glass.css:837`), which resolves to
+   * `--lg-glass-composer-light` / `-dark` (`:245` / `:298`) — so the expectation names that token.
+   */
+  contains(card, 'background: var(--lg-glass-composer)', 'the glass fill')
   contains(card, 'border-radius: var(--lg-glass-radius)', 'the glass radius')
   contains(card, 'isolation: isolate', 'and the stacking context the frost needs to land in')
   contains(frost, 'backdrop-filter: blur(var(--lg-glass-blur))', 'the frost blurs what is behind it')
@@ -342,6 +508,16 @@ await test("the composer is given the frame material, with the frost kept off th
   excludes(css, '[data-composer-seat]', 'the skin declares nothing about the composer seat')
   excludes(css, '--dsw-specific-input-major:', 'the shared input fill is never rebound by this skin')
 
+  /*
+   * The composer's frost, matched with the `:is(` wrapper optional — same reason as `cardOf` above.
+   *
+   * `:is([data-composer-card])::before` does NOT contain the literal `[data-composer-card]::before`: the
+   * `)` the wrapper leaves behind sits between the `]` and the `::`. That single character is why the
+   * mobile block and the four capability branches were red while the two perf blocks — written plainly,
+   * with no wrapper — stayed green.
+   */
+  const COMPOSER_FROST = /\[data-composer-card\]\)?::before/
+
   // Every degradation branch reaches the composer's frost, and none of them patches the card's fill.
   for (const [prelude, label] of [
     [`${MARKER}[data-ui-perf='medium']`, 'medium'],
@@ -351,7 +527,7 @@ await test("the composer is given the frame material, with the frost kept off th
     const blocks = blocksFor(flat, prelude)
     truthy(blocks.length > 0, `the ${label} degradation block exists`)
     truthy(
-      blocks.some((block) => block.includes('[data-composer-card]::before')),
+      blocks.some((block) => COMPOSER_FROST.test(block)),
       `the ${label} block degrades the composer's frost too`,
     )
   }
@@ -363,7 +539,7 @@ await test("the composer is given the frame material, with the frost kept off th
   ]) {
     const blocks = blocksFor(flat, branch)
     truthy(blocks.length > 0, `the ${branch} branch exists`)
-    truthy(blocks.some((block) => block.includes('[data-composer-card]::before')), `${branch} drops the composer's frost`)
+    truthy(blocks.some((block) => COMPOSER_FROST.test(block)), `${branch} drops the composer's frost`)
   }
   excludes(css, '[data-composer-card]{ background: var(--dsw-alias-bg-base)', 'no per-branch composer patch')
   contains(css, '--lg-glass-bg: #fff', 'the material fill is taken opaque at the token instead')
@@ -409,6 +585,16 @@ await test('every translucent surface is taken opaque by the modes that remove t
     '--dsw-specific-sidebar-fill',
     '--dsw-alias-tooltip-bg',
     '--lg-glass-bg',
+    /*
+     * The skin's own surface tiers, here for the same reason `--lg-glass-bg` is: each one is a fill a
+     * real surface paints with, so each must be taken opaque by the modes that remove translucency —
+     * and membership in this list is what makes the `holes` check below actually look at it.
+     */
+    '--lg-glass-fill',
+    '--lg-glass-composer',
+    '--lg-glass-panel',
+    '--lg-glass-panel-inner',
+    '--lg-glass-panel-inner-strong',
   ]
   const TINTS = [
     '--dsw-alias-bg-skeleton',
@@ -429,7 +615,37 @@ await test('every translucent surface is taken opaque by the modes that remove t
     '--lg-glass-border-light',
     '--lg-glass-border-dark',
   ]
-  const ALIASES = ['--lg-glass-bg-light', '--lg-glass-bg-dark']
+  /*
+   * The per-theme HALVES of a themed alias.
+   *
+   * `--lg-glass-bg` is `var(--lg-glass-bg-light)` in the light block and `var(--lg-glass-bg-dark)` in the
+   * dark one, so the pair holds the concrete translucent value while the alias above it is not flagged at
+   * all — `alphaOf` reads a `var(...)` as "no opinion" rather than as opaque.
+   *
+   * The WIP added three more pairs of exactly that shape — `--lg-glass-fill-*`, `--lg-glass-composer-*`
+   * and `--lg-glass-panel-*` — each with its own themed alias declared in the same two blocks
+   * (`glass.css:244-247` light, `:297-300` dark). They belong here for the same reason the `bg` pair
+   * does: a bounded per-theme pair that exists so ONE surface's fill can be thinned without thinning the
+   * others with it.
+   *
+   * This list is deliberately inline rather than in `scripts/skin-exceptions.mjs`: that file's contract is
+   * "rules that REMOVE or OBSCURE shell UI" and it says outright that a colour, a radius or a blur is
+   * material rather than an exception. A translucent fill is not a suppression, so it is classified here.
+   */
+  const ALIASES = [
+    '--lg-glass-bg-light',
+    '--lg-glass-bg-dark',
+    '--lg-glass-fill-light',
+    '--lg-glass-fill-dark',
+    '--lg-glass-composer-light',
+    '--lg-glass-composer-dark',
+    '--lg-glass-panel-light',
+    '--lg-glass-panel-dark',
+    '--lg-glass-panel-inner-light',
+    '--lg-glass-panel-inner-dark',
+    '--lg-glass-panel-inner-strong-light',
+    '--lg-glass-panel-inner-strong-dark',
+  ]
 
   const base = { light: { ...firstDeclarations(palette, LIGHT), ...firstDeclarations(material, LIGHT) }, dark: { ...firstDeclarations(palette, DARK), ...firstDeclarations(material, DARK) } }
   truthy(Object.keys(base.light).length > 10, `the base palette was read (${Object.keys(base.light).length} tokens)`)
@@ -811,10 +1027,19 @@ await test('the settings dialog carries the nearly-opaque tier the palette docum
     .filter((rule) => /(?:^|;|\s)background\s*:/.test(rule.declaration) && rule.selector.includes('data-shortcut-modal'))
   equal(painting.length, 1, 'exactly one rule paints the settings dialog')
   if (painting.length === 1) {
+    /*
+     * THE PANEL HAS ITS OWN TIER NOW, and this assertion follows it there rather than weakening.
+     *
+     * The value moved from the shipped `--dsw-alias-bg-layer-3` to the skin's `--lg-glass-panel` pair —
+     * and that pair is taken opaque by all four no-transparency branches (the `:root` rule in each),
+     * which is the property this assertion exists to protect: the fill must be a TOKEN those branches
+     * can redefine. Checking the shipped token's name while the panel paints a different one would be
+     * a check of the wrong thing.
+     */
     contains(
       painting[0].declaration,
-      'var(--dsw-alias-bg-layer-3)',
-      'and it paints the floating-surface tier the palette documents, by token',
+      'var(--lg-glass-panel)',
+      'and it paints the panel tier by token, so the no-transparency modes can reach it',
     )
     equal(/:where\(/.test(painting[0].selector), false, 'written plainly, so the shell panel rule cannot outrank it')
   }
