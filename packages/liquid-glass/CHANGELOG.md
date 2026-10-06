@@ -6,6 +6,32 @@ recorded too — a change that did not fix the problem is worth more than one th
 
 ---
 
+## 1.0.1 — this package is FROZEN, and the skin now also ships inside the framework (2026-10-06)
+
+**Status: documentation only. No source, no build output and no `lib/` artefact changed in this entry, and
+nothing was published. `node scripts/check.mjs` 26 / 0 and `node scripts/verify.mjs` 340 / 0, unchanged.**
+
+`dsh-ui-projects` now carries a **built-in copy of this skin**, registered as the project `glass`, and long
+term that framework package is the only one that ships updates. This package —
+`@fn-x/dsh-plugin-liquid-glass` and its `@fn-x/dsh-plugin-skin` meta — stays published and installable, and
+**no new version will be released from it.**
+
+What that means, concretely:
+
+- **The material has one owner again, and it is not here.** The built-in's `tokens.css`, `glass.css` and
+  `boot.css` are byte-identical to this package's today, and `dsh-ui-projects`'s
+  `scripts/check-builtin.test.mjs` compares them (raw for the two stylesheets, marker-normalized for the
+  boot sheet and the overlay). **A change made here alone now reaches nobody**: the framework's copy is
+  what a reader has.
+- **Both can be installed at once, and that is why the ids differ.** The built-in is `glass` and this
+  package is `liquid-glass`, so they never collide; the one-skin policy makes them mutually exclusive, so a
+  reader sees two cards and picks one. A reader who had THIS package enabled keeps it — the id did not
+  change — and the built-in arrives off beside it.
+- **`peerDependencies: dsh-ui-projects` widened to `^0.1.0 || ^0.2.0`** in both manifests, for anyone
+  installing from the repository rather than from npm. It changes nothing for an already-published version.
+
+---
+
 ## 1.0.0 — the material round: the overlay, the tiered vocabulary, and the modes that ask for less (no version bump: this entry records the change, and the release that would carry it is a separate decision)
 
 **Status: done. `node scripts/verify.mjs` 340 / 0, `node scripts/check.mjs` 26 / 0,
