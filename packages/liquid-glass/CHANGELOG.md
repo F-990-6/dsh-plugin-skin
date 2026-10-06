@@ -27,8 +27,12 @@ What that means, concretely:
   package is `liquid-glass`, so they never collide; the one-skin policy makes them mutually exclusive, so a
   reader sees two cards and picks one. A reader who had THIS package enabled keeps it — the id did not
   change — and the built-in arrives off beside it.
-- **`peerDependencies: dsh-ui-projects` widened to `^0.1.0 || ^0.2.0`** in both manifests, for anyone
-  installing from the repository rather than from npm. It changes nothing for an already-published version.
+- **The peer range was widened and then put back.** `peerDependencies: dsh-ui-projects` was briefly
+  `^0.1.0 || ^0.2.0` in both manifests, and this package's own `check.mjs` refused it — the checker pins
+  the range by value (`got "^0.1.0 || ^0.2.0", expected "^0.1.0"`). It is `^0.1.0` again, and that is the
+  right end state rather than a retreat: the package is frozen, so a wider range reaches nobody — an
+  installer only ever sees the range that was published — and a frozen repository is worth more green than
+  adjusted. The revert is commit `ba8e39c`.
 
 ---
 
