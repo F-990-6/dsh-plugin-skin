@@ -79,20 +79,42 @@ body {
   --lg-glass-bg-light: rgb(255 255 255 / 54%);
   --lg-glass-bg-dark: rgb(28 28 30 / 58%);
 
-  --lg-glass-border-light: rgb(255 255 255 / 14%);
-  --lg-glass-border-dark: rgb(255 255 255 / 10%);
-
-  --lg-glass-blur: 24px;
-  --lg-glass-saturate: 140%;
-  --lg-glass-radius: 24px;
-  --lg-glass-shadow: 0 24px 60px rgb(0 0 0 / 6%);
   /*
-   * TWO INSETS, AND NEITHER IS A MIRROR. The top line is a 14% hairline — the light that lands on a
-   * rounded edge — and the bottom line is a 4% DARK line, which is what gives a pane the look of
-   * having thickness. iOS 27's material is matte: it catches light, it does not reflect an image.
-   * A single bright inset at 45% was the earlier reading of "glass", and it read as plastic.
+   * THE EDGE IS LIT, AND THAT IS ALL IT IS. One hairline of light on the rim, a shade weaker in the dark
+   * theme because the surface behind it is already dark. It reads as an edge because of its CONTRAST with
+   * the fill, not because of its width: widening it is what makes a pane look drawn rather than lit.
    */
-  --lg-glass-inner-highlight: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 4%);
+  --lg-glass-border-light: rgb(255 255 255 / 19%);
+  --lg-glass-border-dark: rgb(255 255 255 / 14%);
+
+  --lg-glass-blur: 18px;
+  --lg-glass-saturate: 150%;
+  --lg-glass-radius: 32px;
+  /*
+   * TWO SHADOWS, BECAUSE ONE CANNOT DO BOTH JOBS. The tight one (2px/6px) is the CONTACT shadow: it seats
+   * the pane on the surface and is what the eye reads as "this is in front". The wide one (18px/44px) is
+   * the AMBIENT shadow: it is the height. A single 24px/60px shadow at 6% — which is what this was — is
+   * neither: too diffuse to seat anything and too faint to lift it, so every pane sat in the same plane as
+   * the page and the material read as a tint rather than as a surface.
+   *
+   * The dark theme overrides this below, and it has to: a black shadow on a near-black page is invisible, so
+   * the same numbers would buy nothing there.
+   */
+  --lg-glass-shadow: 0 2px 7px rgb(15 23 42 / 11%), 0 20px 52px rgb(15 23 42 / 17%);
+  /*
+   * THREE INSETS, AND NONE IS A MIRROR. The top line is an 18% hairline — the light that lands on a rounded
+   * edge — and the bottom line is a 7% DARK line, which is what gives a pane the look of having THICKNESS.
+   * iOS 27's material is matte: it catches light, it does not reflect an image. A single bright inset at 45%
+   * was the earlier reading of "glass", and it read as plastic.
+   *
+   * The third is the one this round added, and it is the difference between an edge and a body: a wide,
+   * faint inward light that falls off over the top third of the pane. It is deliberately the SOFTEST of the
+   * three (20% over 18px, with a -14px spread pulling it back to the rim) because a light that reaches the
+   * middle stops being curvature and becomes a gradient. The depth comes from the shadow pair above; this
+   * only says which way the light is coming from.
+   */
+  --lg-glass-inner-highlight: inset 0 1px 0 rgb(255 255 255 / 19%), inset 0 -1px 0 rgb(0 0 0 / 8%),
+    inset 0 11px 20px -15px rgb(255 255 255 / 24%);
 
   /*
    * TWO TIERS, NAMED FOR WHAT THEY ARE FOR — the correction the previous rounds needed.
@@ -135,17 +157,23 @@ body {
    * RAISE THE HALO, NOT THE FILL. Going back up would undo the effect the reader asked for four
    * times; hardening the glyphs is the part that was under-tuned, not the transparency.
    */
-  --lg-glass-composer-light: rgb(255 255 255 / 6%);
-  --lg-glass-composer-dark: rgb(28 28 30 / 10%);
+  --lg-glass-composer-light: rgb(255 255 255 / 3%);
+  --lg-glass-composer-dark: rgb(28 28 30 / 6%);
 
   /*
    * The halo the paragraph above refers to, a light/dark pair like every other token here. It is
    * `text-shadow` rather than a fill because it must follow the GLYPHS: the card contains a
    * textarea, buttons and labels, all of which inherit it, and none of which this file can restyle
    * one by one without naming the shell's own markup.
+   *
+   * IT WAS 100%, AND 100% WAS THE BUG (2026-10-06). A fully opaque white line under near-black glyphs is
+   * as bright as the panel behind them, so it does not harden the text — it bleaches it, and a reader sees
+   * pale grey letterforms and asks for the ink to be made darker when the ink was #0f1115 all along. What
+   * this pair is for is the LAST few percent of contrast over a translucent fill, and that is what it now
+   * does: a whisper under the glyphs, in whichever direction the theme needs.
    */
-  --lg-glass-composer-text-shadow-light: 0 1px 0 rgb(255 255 255 / 100%);
-  --lg-glass-composer-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 85%);
+  --lg-glass-composer-text-shadow-light: 0 1px 0 rgb(255 255 255 / 35%);
+  --lg-glass-composer-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 40%);
 
   /*
    * THE PANEL TIER — THE SETTINGS MODAL AND THE ADD-PLUGINS DIALOG.
@@ -204,9 +232,13 @@ body {
   /*
    * The panels' halo, the same values as the composer's and a separate pair on purpose: a reader
    * types at 6% but reads at 6%, and the two are likely to want different compensation later.
+   *
+   * Cut from 100% and 85% with the composer's, for the reason recorded there: the halo was bleaching the
+   * ink rather than hardening it, and this is the tier the SETTINGS MODAL takes — the panel whose text a
+   * reader complained was too pale to read.
    */
-  --lg-glass-panel-text-shadow-light: 0 1px 0 rgb(255 255 255 / 100%);
-  --lg-glass-panel-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 85%);
+  --lg-glass-panel-text-shadow-light: 0 1px 0 rgb(255 255 255 / 35%);
+  --lg-glass-panel-text-shadow-dark: 0 1px 0 rgb(0 0 0 / 40%);
 
   /*
    * THE CODE TIER — THE ONE PLACE THIS SKIN IS DELIBERATELY NOT TRANSLUCENT.
@@ -247,7 +279,7 @@ body {
    *     name per role while the paired tokens above remain the single source of truth.
    */
   --lg-glass-blur-mobile: 16px;
-  --lg-glass-blur-menu: 24px;
+  --lg-glass-blur-menu: 18px;
   /*
    * The two degradation tiers the runtime selects between by publishing `data-ui-perf`, and the
    * reason the specification's "12–16px on a low-end device" has values to name at all.
@@ -255,8 +287,8 @@ body {
    * The FULL tier is `--lg-glass-blur` (20px) and needs no token of its own: it is what the rules
    * already use when no attribute is present.
    */
-  --lg-glass-blur-medium: 16px;
-  --lg-glass-blur-low: 12px;
+  --lg-glass-blur-medium: 13px;
+  --lg-glass-blur-low: 10px;
   --lg-accent-alt: #5856d6;
   --lg-accent-alt-dark: #5e5ce6;
 }
@@ -328,6 +360,15 @@ body[data-ds-dark-theme] {
   --lg-accent-alt-current: var(--lg-accent-alt-dark);
   --lg-glass-bg: var(--lg-glass-bg-dark);
   --lg-glass-border: var(--lg-glass-border-dark);
+  /*
+   * THE DARK THEME NEEDS ITS OWN SHADOW, and this is the whole reason the token is single-valued otherwise.
+   * The light pair is a blue-grey shadow on a white page; on a near-black page the same shadow is invisible,
+   * and a pane with no shadow sits in the same plane as everything behind it. So the dark theme gets a
+   * deeper, tighter pair: the contact line at 30% so the edge still separates, the ambient one at 45% for
+   * height. Neither is a "darker mode" of the light values — a black shadow has no colour to lose, only
+   * contrast to gain.
+   */
+  --lg-glass-shadow: 0 2px 7px rgb(0 0 0 / 34%), 0 22px 56px rgb(0 0 0 / 54%);
   --lg-glass-fill: var(--lg-glass-fill-dark);
   --lg-glass-composer: var(--lg-glass-composer-dark);
   --lg-glass-composer-text-shadow: var(--lg-glass-composer-text-shadow-dark);
@@ -882,6 +923,19 @@ body :is([data-composer-card]) {
   background: var(--lg-glass-composer);
   /* The halo that pays for the thin fill. See the token's note above. */
   text-shadow: var(--lg-glass-composer-text-shadow);
+  /*
+   * THE TWO SECONDARY INKS, PUSHED TOWARD THIS THEME'S STRONGEST ONE — and written once, because the
+   * direction is carried by the reference rather than by the value. `--dsw-alias-label-primary` is near-black
+   * in the light theme and near-white in the dark one, so mixing toward it DARKENS the secondary and
+   * tertiary inks on a light page and LIGHTENS them on a dark one, which is the same correction in both.
+   *
+   * Why here rather than in the token block: the shell picked these greys against its own opaque surfaces.
+   * This card is 3% white over the page, and a subtitle that was designed for a solid background reads as
+   * washed out on air. The composer's own text is the reader's, so the scoped fix belongs to the scope that
+   * changed the surface, not to every label in the application.
+   */
+  --dsw-alias-label-secondary: color-mix(in srgb, var(--dsw-alias-label-secondary) 76%, var(--dsw-alias-label-primary));
+  --dsw-alias-label-tertiary: color-mix(in srgb, var(--dsw-alias-label-tertiary) 68%, var(--dsw-alias-label-primary));
   border-radius: var(--lg-glass-radius);
   /*
    * Three shadows, and the first is the SHIPPED ring rather than one of ours.
