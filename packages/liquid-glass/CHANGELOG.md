@@ -6,6 +6,80 @@ recorded too — a change that did not fix the problem is worth more than one th
 
 ---
 
+## 1.0.0 — the material round: the overlay, the tiered vocabulary, and the modes that ask for less (no version bump: this entry records the change, and the release that would carry it is a separate decision)
+
+**Status: done. `node scripts/verify.mjs` 340 / 0, `node scripts/check.mjs` 26 / 0,
+`node scripts/emitted-css.mjs` exits 0, `npm run build` green, and
+`node scripts/derive-boot-css.mjs --package . --check` green at 13 blocks / 14092 bytes. All three
+artefacts under `lib/`: `client.js` 115824, `boot-css.js` 13239, `index.js` 1999. The round was picked up
+with the working tree at 258 assertions and 21 failing. No browser run: the three visual consequences
+below were put to the reader, who accepted them as they stand, so none of them was changed to make a
+screenshot agree. `install.ps1` was not executed and nothing was published.**
+
+### The overlay, and why it is a second path to the same paint
+
+- **`src/client/index.js` (+204 lines)**: a sheet inserted into `<head>` from `apply`, carrying dialogs,
+  menus/listboxes/the add-source dropdown, the IDE dock, and the tool-call/diff grounds. It exists because
+  the scoped path lost the specificity contest — the shell styles its own dialogs with a two-class
+  selector, and a `:where()` rule is (0,1,1) after scoping, so the tuned declarations never reached the
+  element. The file header already stated both reasons; this round is the code catching up with them.
+- **`OVERLAY_MODES`, a fourth sheet, LAST in `OVERLAY_CSS`**: every blur in the overlay is `!important`,
+  and an `!important` declaration beats a normal one whatever the specificity — so `glass.css`'s plain
+  `backdrop-filter: none` could not reach it, and a reader who had asked their system for less
+  transparency kept frosted dialogs, menus, the add-source dropdown and the dock panes. The modes sheet
+  answers the three queries with the SAME selectors and the same `!important`, which leaves source order
+  to decide. `@supports not (backdrop-filter: …)` is deliberately absent: a browser without the property
+  already drops every blur in the file, which is that mode's outcome.
+
+### The material became a vocabulary
+
+- **Three per-surface pairs** — `--lg-glass-fill-*` (surfaces a reader works through),
+  `--lg-glass-composer-*` (the thinnest fill, with its own halo), `--lg-glass-panel-*` — plus
+  `--lg-glass-panel-inner*` for the fills the panel's own children paint with. Rules left `:where()` where
+  they had been losing, which is why earlier rounds of tuning were invisible on screen.
+- **The four no-transparency modes now cover every tier**, and that is now proved rather than asserted:
+  the tiers are members of the suite's `SURFACES` list, so a tier the branches miss fails the suite.
+
+### A defect found on the way, and the negative result worth keeping
+
+- The panel-inner pair's dark half was `rgb(255 255 255 / 46%)` — a copy of the LIGHT half — so the
+  panel's inner layers would have been white in a dark theme. It was never visible: the overlay declared
+  the same four tokens as literals with higher specificity and won, which made the values here dead code.
+  They now carry the overlay's own dark values (`rgb(30 33 42 / 50%)` and `rgb(30 33 42 / 54%)`), which is
+  what those layers have always actually rendered — **no rendered value changed**, and the branches can
+  reach them now.
+- The same SHAPE of defect is **accepted as it stands** for the overlay's 14 remaining literal token values
+  (module-platform 92%, the portal preview 72 / 76%, the column-hover 92%): they have no tier, and whether
+  those surfaces should go opaque in the no-transparency modes is a design question rather than a bug.
+  Recorded here so the next reader does not have to rediscover it as a defect.
+
+### `scripts/verify.mjs`
+
+- **The column-marker constraint was a proxy for its own name.** It required the substring `:has(`
+  anywhere in the selector, which `body :is([data-ui-skin-column]):has(…)` satisfied while still making
+  the column the subject of the rule — and it failed two rules whose whole declaration is a token rebind,
+  which is neither selecting the frame nor laying anything out. It now separates FRAME (every occurrence
+  of the marker inside a `:has(…)` argument) from COLUMN (the marker is the subject), and holds a column
+  rule to: no layout property, no filter, and nothing but custom properties — except a paint that goes
+  through a `--lg-glass-*` token, which is how the dock column already worked.
+- That property list used to be checked against the SELECTOR text, where `isolation`, `z-index` and
+  `contain:` cannot appear: 72 assertions that passed on every rule and proved nothing. They are checked
+  against the DECLARATION now.
+- **The overlay is read as well**, from its SOURCE (`src/client/index.js`) rather than from
+  `__overlay.OVERLAY_CSS` — that export is a snapshot of a value the package only serves as a built
+  bundle, so reading it here would make the suite lag the sources until someone rebuilt. 18 marker
+  selectors are checked now (12 scoped + 6 overlay) instead of 12.
+- **A new test holds the shape** that makes the modes sheet win (same selectors, `!important` on both
+  sides, the block last), because no source-level check can see a cascade.
+- `manifest.generated.js` regenerated: it declared 1.0.0 while `package.json` declared 1.0.1.
+
+### Not done, on purpose
+
+- No version bump and no publish.
+- `index.broken.js.bak` — an untracked earlier iteration of the overlay — was removed rather than kept.
+
+---
+
 ## 1.0.0 — Round 56h: the derivation tool moves into the package that owns the CSS (no version bump: no shipped declaration changed, and no file in `lib/` changed at all)
 
 **Status: done. `node scripts/check.mjs` 26 / 0 (unchanged), `node scripts/verify.mjs` 237 / 0 (unchanged),

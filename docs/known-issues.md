@@ -13,7 +13,8 @@
 **影响**：
 
 - **发布 npm 后**——皮肤包的用户装完**跑不了** `npm run manifest`——**但这是预期的**：`files` 字段不含 `scripts/`——`derive-manifest.mjs` 也不在 tarball 里——**开发工具不发布**
-- **开发时**——junction 断（框架包路径改名/删）——`npm run manifest` 崩——**但其他脚本（verify/build）正常**——因为它们的 import 直接走 .mjs 里写的路径
+- **开发时**——junction 断（框架包路径改名/删）——**五个入口全部崩**：`npm run manifest`、`build`、`verify`、`emitted-css`、`derive-boot-css`。它们的框架依赖都写成 `../../../.dev/dsh-ui-projects/…`（`package.json` 的 `manifest` 脚本、`scripts/build.mjs:30`、`scripts/verify.mjs:34`、`scripts/derive-boot-css.mjs:39`、`scripts/emitted-css.mjs:21`）。
+  **本节此前写"但其他脚本（verify/build）正常——因为它们的 import 直接走 .mjs 里写的路径"是错的**：那几个 `.mjs` 里写的路径**正是** `.dev` 转发路径，junction 一断它们连模块都加载不了。**唯一不受影响的是 `scripts/check.mjs`**（它不 import 框架）。
 
 **不阻塞 P2-4**——但记入——
 
