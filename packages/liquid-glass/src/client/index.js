@@ -201,7 +201,38 @@ body[data-ui-project-liquid-glass="on"][data-ds-dark-theme] [slot='conversation.
 }
 `
 
-const OVERLAY_CSS = OVERLAY_DIALOG + OVERLAY_DENSE + OVERLAY_DOCK
+/**
+ * THE MODES WHERE THE READER ASKED FOR LESS, ANSWERED AT THE SAME STRENGTH.
+ *
+ * `glass.css` turns its own blur off under these three queries (`backdrop-filter: none` in each of its
+ * suppression blocks) — and it cannot turn the OVERLAY's off. Every blur in this file carries
+ * `!important`, and an `!important` declaration beats a normal one whatever the specificity, so the
+ * reader who had asked their system for less transparency still got frosted dialogs, menus and dock
+ * panes: the FILLS went opaque (that half is what the tier tokens fixed) while the blur stayed on.
+ *
+ * This sheet makes the same request at the same strength. The selectors are copied from the rules whose
+ * blur it has to beat, so specificity ties; `!important` is on both sides, so importance ties; and this
+ * block is LAST in `OVERLAY_CSS` — source order is the only lever left once those two are equal.
+ *
+ * `@supports not (backdrop-filter: …)` IS DELIBERATELY ABSENT: there is nothing to switch off. A browser
+ * without the property drops every blur in this file on the floor, which is the outcome that mode asks
+ * for.
+ */
+const OVERLAY_MODES = `
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  body[data-ui-project-liquid-glass="on"] [role='dialog'],
+  body[data-ui-project-liquid-glass="on"] [role='menu'],
+  body[data-ui-project-liquid-glass="on"] [role='listbox'],
+  body[data-ui-project-liquid-glass="on"] [data-install-registry='true'],
+  body[data-ui-project-liquid-glass="on"] [data-dockit-host='dock'],
+  body[data-ui-project-liquid-glass="on"] [data-dockit-pane-panel] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+`
+
+const OVERLAY_CSS = OVERLAY_DIALOG + OVERLAY_DENSE + OVERLAY_DOCK + OVERLAY_MODES
 
 /**
  * Insert the overlay once, into the document head, with no dependency on any service.

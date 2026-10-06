@@ -341,7 +341,7 @@ await test('the column marker selects the frame or rebinds the column’s tokens
     }))
   equal(
     overlaySheets.map((sheet) => sheet.name),
-    ['OVERLAY_DIALOG', 'OVERLAY_DENSE', 'OVERLAY_DOCK'],
+    ['OVERLAY_DIALOG', 'OVERLAY_DENSE', 'OVERLAY_DOCK', 'OVERLAY_MODES'],
     'the three overlay sheets were found in `src/client/index.js`, so this check is not blind to them',
   )
   const scopedRules = rulesIn(css, 'scoped')
@@ -415,6 +415,47 @@ await test('the column marker selects the frame or rebinds the column’s tokens
   // The stacking context the frost needs comes from `isolation`, which does NOT capture fixed descendants
   // — the one property that gives a stacking context without breaking the settings dialog.
   contains(css, 'isolation: isolate', 'the stacking context comes from isolation')
+})
+
+/*
+ * THE OVERLAY'S BLUR, AND THE ONE LEVER THAT CAN SWITCH IT OFF (2026-10-06).
+ *
+ * Every blur in `src/client/index.js` carries `!important`, which is exactly what makes the overlay
+ * impossible to out-specify — and also what makes `glass.css`'s plain `backdrop-filter: none` unable to
+ * reach it. So the reader who had asked their system for less transparency kept frosted dialogs, menus
+ * and dock panes: the fills went opaque and the blur stayed on.
+ *
+ * No source-level check can see a cascade, so this test does not pretend to. What it holds is the SHAPE
+ * that makes the override win — the same selectors on both sides (specificity ties), `!important` on
+ * both sides (importance ties), and the switching block LAST in `OVERLAY_CSS` (source order decides).
+ * If any of those three stops being true the fix is silently gone, which is the failure worth a test.
+ */
+await test('the overlay switches its own blur off for the modes that ask for less', () => {
+  const blurAt = [...overlay.matchAll(/backdrop-filter: blur/g)].map((match) => match.index)
+  truthy(blurAt.length > 0, `the overlay blurs something (${blurAt.length} place(s))`)
+
+  const modesAt = overlay.indexOf('@media (prefers-reduced-transparency: reduce)')
+  truthy(modesAt !== -1, 'the overlay answers the query that asks for less transparency')
+  truthy(
+    blurAt.every((index) => index < modesAt),
+    'and the answer comes LAST, so source order decides once importance and specificity tie',
+  )
+
+  const modes = overlay.slice(modesAt)
+  contains(modes, 'backdrop-filter: none !important', 'the blur is switched off at the same weight')
+  contains(modes, '-webkit-backdrop-filter: none !important', 'with the prefixed twin')
+  for (const query of ['prefers-reduced-transparency: reduce', 'prefers-contrast: more', 'forced-colors: active']) {
+    contains(modes, query, `the modes block answers ${query}`)
+  }
+
+  /** Every selector a blur rule names, so a surface cannot keep its blur by being left out. */
+  const blurred = [...overlay.matchAll(/([^{}]*)\{[^{}]*backdrop-filter: blur/g)]
+    .flatMap((match) => match[1].split(',').map((one) => one.replace(/\s+/g, ' ').trim()))
+    .filter((one) => one.includes('data-ui-project-liquid-glass'))
+  truthy(blurred.length >= 3, `the blurred selectors were read (${blurred.length})`)
+  for (const selector of blurred) {
+    contains(modes, selector, `the modes block also names ${selector}`)
+  }
 })
 
 await test('one frost on the frame, and no blur on a column', () => {
