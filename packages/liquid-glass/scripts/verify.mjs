@@ -62,6 +62,19 @@ const contains = (haystack, needle, label = `contains ${JSON.stringify(needle)}`
 const excludes = (haystack, needle, label = `does not contain ${JSON.stringify(needle)}`) =>
   String(haystack).includes(needle) ? fail(`${label} — found`) : ok(label)
 
+/*
+ * STRIP COMMENTS BEFORE READING A SHEET AS RULES, and it lives up here rather than beside its first caller
+ * for a reason worth recording: this test file runs its cases in order with top-level `await`, so a `const`
+ * defined below a call site is in the temporal dead zone when that call runs. It used to sit at the bottom
+ * of the file, next to two readers that did use it — while the three that most needed it did not.
+ *
+ * WHAT IT PREVENTS, measured on 2026-10-06: a comment written between two rules of the overlay sheet was
+ * read as a SELECTOR by the "the modes block names every blurred selector" test, and the suite failed with a
+ * whole sentence from the comment quoted back as a selector the modes block had failed to name. A comment is
+ * legal CSS and it is the sort of thing a future editor will add; the reader is what had to be fixed.
+ */
+const withoutComments = (text) => String(text).replace(/\/\*[\s\S]*?\*\//g, ' ')
+
 const test = async (name, body) => {
   /*
    * ONE TEST AT A TIME, by substring, exactly as the framework's suite offers it. It is how a report can
@@ -334,7 +347,7 @@ await test('the column marker selects the frame or rebinds the column’s tokens
    * the same question either way.
    */
   const rulesIn = (text, source) =>
-    [...String(text).matchAll(/([^{}]*\[data-ui-skin-column\][^{}]*)\{([^{}]*)\}/g)].map((match) => ({
+    [...withoutComments(text).matchAll(/([^{}]*\[data-ui-skin-column\][^{}]*)\{([^{}]*)\}/g)].map((match) => ({
       source,
       selector: match[1].replace(/\s+/g, ' ').trim(),
       declaration: match[2].replace(/\s+/g, ' ').trim(),
@@ -449,7 +462,7 @@ await test('the overlay switches its own blur off for the modes that ask for les
   }
 
   /** Every selector a blur rule names, so a surface cannot keep its blur by being left out. */
-  const blurred = [...overlay.matchAll(/([^{}]*)\{[^{}]*backdrop-filter: blur/g)]
+  const blurred = [...withoutComments(overlay).matchAll(/([^{}]*)\{[^{}]*backdrop-filter: blur/g)]
     .flatMap((match) => match[1].split(',').map((one) => one.replace(/\s+/g, ' ').trim()))
     .filter((one) => one.includes('data-ui-project-liquid-glass'))
   truthy(blurred.length >= 3, `the blurred selectors were read (${blurred.length})`)
@@ -460,7 +473,7 @@ await test('the overlay switches its own blur off for the modes that ask for les
 
 await test('one frost on the frame, and no blur on a column', () => {
   contains(css, ':has(> [data-ui-skin-column])', 'the frame is selected by its marked children')
-  const blurSelectors = [...css.matchAll(/([^{}@]+)\{[^{}]*backdrop-filter[^{}]*\}/g)].map((match) => match[1].trim())
+  const blurSelectors = [...withoutComments(css).matchAll(/([^{}@]+)\{[^{}]*backdrop-filter[^{}]*\}/g)].map((match) => match[1].trim())
   truthy(blurSelectors.length > 0, 'the skin does apply refraction somewhere')
   for (const selector of blurSelectors) {
     const onAColumn = /\[data-ui-skin-column\]/.test(selector)
@@ -979,7 +992,8 @@ await test('the bundle needs nothing from the module table', () => {
  * comment tail becomes part of the NEXT selector and a rule that hides something is counted twice —
  * once under its real selector, once under a selector no human wrote.
  */
-const withoutComments = (text) => String(text).replace(/\/\*[\s\S]*?\*\//g, '')
+/* `withoutComments` lives at the top of this file: the readers below it run after it, and one of them used
+ * to fail on a legal CSS comment while this definition sat here, below the call site. */
 
 const hidingRules = (text) =>
   [...withoutComments(text).matchAll(/([^{}]+)\{([^{}]*)\}/g)]
