@@ -128,3 +128,22 @@ dependencies（@fn-x/dsh-plugin-liquid-glass@^1.0.0）会去 registry 找 → 40
 1. 未来若要装 example 包，先试官方 `dsh plugin --profile web add <path>`。
 2. 若官方命令也失败，则记入 dsh 上游 issue。
 3. A 阶段暂止损，不再深挖手改 patch 路径。
+
+## 8 · 跨文件做文本替换：PowerShell 5.1 会把无 BOM 的 UTF-8 静默写坏
+
+**事实**（2026-10-06，内置化过程中实测）：用 PowerShell 5.1 做"读—替换—写回"时
+
+    $t = Get-Content -LiteralPath $f -Raw
+    $t = $t.Replace('old', 'new')
+    [System.IO.File]::WriteAllText($f, $t)
+
+会**静默损坏文件**：`Get-Content -Raw` 对**没有 BOM 的 UTF-8 文件按 ANSI（本机码页 936）解码**，于是每个 `—`（em dash）和 `─`（box drawing）都变成乱码，再按 UTF-8 写回就永久留在文件里。**其中 4 处还丢了一个字节**（乱码里出现的 `?`），所以"反向解码"修不回来——**只能从原件重新生成**。
+
+**后果**：那次事故损坏了 3 个文件（`skin.js` 14 处乱码、`overlay.js` 92 处、`boot.css` 4 处），而且**已经提交进历史**，最后由内置化的等价性检查抓出来。三个文件后来从干净的 git 版本重新生成，乱码数均为 0。
+
+**规则**：
+
+- 跨编码文件做替换，**用 Node**（`readFileSync(…, 'utf8')` + `writeFileSync(…, 'utf8')`）——本次修复就是这么做的；
+- 或 PowerShell 7 的 `Set-Content -Encoding utf8NoBOM`；
+- **不要**用 PS 5.1 的 `WriteAllText`，也不要用 `>` / `|` / `Out-File` 把**文件内容**搬进源码文件（`Out-File` 还会加 BOM）；
+- 判据：改完后数**乱码字符数**（`\uFFFD` 加 CJK 兼容区命中）应为 0。本次三个文件修完均为 0。
