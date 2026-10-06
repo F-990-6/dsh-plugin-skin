@@ -57,14 +57,26 @@ file that describes nothing.
 
 ```sh
 node scripts/build.mjs                                     # src/** → lib/**
-node ../dsh-ui-projects/scripts/derive-manifest.mjs --package . --check   # package.json → manifest.generated.js
+node ../../.dev/dsh-ui-projects/scripts/derive-manifest.mjs --package . --check   # package.json → manifest.generated.js
 node scripts/check.mjs                                     # this package against its own declarations
 node scripts/verify.mjs                                    # the material
 node scripts/emitted-css.mjs                               # what the browser receives, as text
-node ../dsh-ui-projects/scripts/load-check.mjs             # this package mounted by the real framework
+node ../../.dev/dsh-ui-projects/scripts/load-check.mjs     # the framework's suite — read the note below
 ```
 
 `npm run build && npm run manifest && npm run check && npm test` is the same sequence.
+
+**Two notes on those two paths**, both measured rather than remembered:
+
+- They reach the framework through the junction at the monorepo root,
+  `.dev/dsh-ui-projects` → the framework checkout. This block used to print `../dsh-ui-projects/...`,
+  which resolves to `packages/dsh-ui-projects` — a directory that does not exist — so both commands
+  died on a module-not-found before running anything.
+- **`load-check.mjs` does not mount THIS package.** It resolves the framework's own sibling,
+  `plugins/dsh-plugin-liquid-glass` (the older `@xjl-resources` checkout), and reports on that. Running
+  it is still worth doing — it is the framework's suite — but a green run is evidence about the sibling
+  and not about this package. This package is covered by `scripts/check.mjs`, `scripts/verify.mjs` and
+  the npm equivalents above.
 
 ### What each check is for, and what it is not
 
