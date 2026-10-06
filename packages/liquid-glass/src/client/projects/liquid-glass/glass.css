@@ -735,6 +735,12 @@ body :is([data-ui-skin-column]) {
  * GREY, NOT WHITE, AND DEEPER THAN THE PAGE. The lines' own base is 18% white, so the ground is set
  * a shade darker than that base would suggest: what a reader sees is base-over-ground, and it has to
  * land on grey rather than on the warm page tone for the unchanged majority to read as a code block.
+ *
+ * THE OVERLAY CARRIES THE SAME GROUND AND WINS, SO CHANGE BOTH OR NEITHER. `src/client/index.js`
+ * declares this background with `!important` (`:190-195`), and an `!important` declaration beats a
+ * plain one whatever the specificity — so editing the value HERE alone changes nothing on screen. The
+ * twin is kept because the overlay is the path that survives being out-specified, and this scoped rule
+ * is what remains if that path ever goes away.
  */
 body :is([slot='tool.call.toolview']) {
   background: rgb(203 199 190);
@@ -762,6 +768,9 @@ body[data-ds-dark-theme] :is([slot='tool.call.toolview']) {
  *
  * OPAQUE, in the skin's own warm tone rather than the shipped blue (#EDF3FE, measured), because the
  * request was a background for this panel and a translucent one reads as no background at all.
+ *
+ * THE OVERLAY CARRIES THE SAME GROUND AND WINS, SO CHANGE BOTH OR NEITHER — see the note above the
+ * toolview rule; the twin here is `src/client/index.js:196-201`.
  */
 body :is([slot='conversation.chat.node']):has([slot='tool.call.toolview']) > * {
   background: rgb(246 244 239);
