@@ -70,6 +70,18 @@ const OVERLAY_ID = 'lg-overlay'
  *
  * Note for the next editor: no character in these strings may be a backtick. The comment you are
  * reading is outside them on purpose — see the header.
+ *
+ * AND NOTHING BUT CSS GOES IN THEM, which this round learned the hard way: a comment written INSIDE the
+ * dialog sheet broke `scripts/verify.mjs`'s "the modes block names every blurred selector" test, because
+ * that test reads the sheet as text and takes whatever sits between two rules for a selector — the comment
+ * was reported as a blurred selector the modes block had failed to name. Everything the dialog rule does is
+ * explained here instead.
+ *
+ * THE TWO INK CORRECTIONS IN THAT RULE. The dialog rebinds `--dsw-alias-label-secondary` and `-tertiary`
+ * toward `--dsw-alias-label-primary`, which is the same correction the composer makes in `glass.css`, for the
+ * same reason: the shell chose those greys against its own opaque surfaces, and a subtitle designed for a
+ * solid background reads as washed out on a translucent panel. Mixing toward the theme's strongest ink
+ * darkens them on a light page and lightens them on a dark one, so one declaration serves both themes.
  */
 const OVERLAY_DIALOG = `
 body[data-ui-project-liquid-glass="on"] [role='dialog'] {
@@ -79,6 +91,8 @@ body[data-ui-project-liquid-glass="on"] [role='dialog'] {
   --dsw-alias-bg-layer-2: var(--lg-glass-panel-inner, rgb(255 255 255 / 46%));
   --dsw-alias-bg-layer-3: var(--lg-glass-panel-inner-strong, rgb(255 255 255 / 50%));
   --dsw-alias-bg-overlay: var(--lg-glass-panel-inner-strong, rgb(255 255 255 / 50%));
+  --dsw-alias-label-secondary: color-mix(in srgb, var(--dsw-alias-label-secondary) 76%, var(--dsw-alias-label-primary));
+  --dsw-alias-label-tertiary: color-mix(in srgb, var(--dsw-alias-label-tertiary) 68%, var(--dsw-alias-label-primary));
   backdrop-filter: blur(var(--lg-glass-blur-menu, 24px)) saturate(var(--lg-glass-saturate, 140%)) !important;
   -webkit-backdrop-filter: blur(var(--lg-glass-blur-menu, 24px)) saturate(var(--lg-glass-saturate, 140%)) !important;
   border-radius: var(--lg-glass-radius, 24px) !important;
